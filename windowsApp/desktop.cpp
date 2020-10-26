@@ -85,6 +85,8 @@ int __cdecl main(void)
         return 1;
     }
 
+    printf("connection\n");
+
     // No longer need server socket
     closesocket(ListenSocket);
 
