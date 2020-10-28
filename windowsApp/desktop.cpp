@@ -5,8 +5,11 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <string>
 #include <stdlib.h>
 #include <stdio.h>
+
+using namespace std;
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "12000"
@@ -99,7 +102,10 @@ int __cdecl main(void)
             printf("%s\n",recvbuf);
 
         // Echo the buffer back to the sender
-            iSendResult = send( ClientSocket, recvbuf, iResult, 0 );
+            string temp = string(recvbuf);
+            temp.pop_back();
+            temp += " sent from server\n";
+            iSendResult = send( ClientSocket, temp.c_str() ,temp.length(), 0 );
             if (iSendResult == SOCKET_ERROR) {
                 printf("send failed with error: %d\n", WSAGetLastError());
                 closesocket(ClientSocket);

@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             //response received from server
             Log.d("test", "response " + values[0]);
             //process server response here....
+            System.out.println(values[0]);
 
         }
 
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             if (mTcpClient != null) {
                 mTcpClient.sendMessage(spokenText);
             }
-            System.out.println(spokenText);
+//            System.out.println(spokenText);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
