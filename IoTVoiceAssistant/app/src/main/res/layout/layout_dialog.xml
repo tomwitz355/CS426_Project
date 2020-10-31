@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+
+    <EditText
+        android:id="@+id/edit_IP"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/custom_input"
+        android:digits="0123456789."
+        android:ems="10"
+        android:hint="@string/ipv4_address"
+        android:inputType="number"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp" />
+
+    <EditText
+        android:id="@+id/edit_portNumber"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/edit_IP"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/custom_input"
+        android:ems="10"
+        android:hint="@string/port_number"
+        android:inputType="number"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp" />
+
+
+</RelativeLayout>

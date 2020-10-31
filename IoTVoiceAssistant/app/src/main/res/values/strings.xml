@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">IoT Voice Assistant</string>
+    <string name="device_image_type">Device Image Type</string>
+    <string name="X">X</string>
+    <string name="connect">Connect</string>
+    <string name="edit">Edit</string>
+    <string name="connect_button">connect button</string>
+    <string name="port_number">Port Number</string>
+    <string name="ipv4_address">IPv4 Address</string>
+    <string name="edit_button">edit button</string>
+</resources>
