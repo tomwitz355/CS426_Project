@@ -13,10 +13,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-public class NewItemDialog extends AppCompatDialogFragment {
+public class EditItemDialog extends AppCompatDialogFragment {
     private EditText editTextIP;
     private EditText editTextPort;
-    private DialogListener listener;
+    private EditItemDialog.DialogListener listener;
     private View view;
 
     @Override
@@ -25,7 +25,7 @@ public class NewItemDialog extends AppCompatDialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         view = inflater.inflate(R.layout.layout_dialog, null);
 
-        builder.setView(view).setTitle("Add a new connection")
+        builder.setView(view).setTitle("Edit connection")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -37,7 +37,7 @@ public class NewItemDialog extends AppCompatDialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         String IP = editTextIP.getText().toString();
                         String Port = editTextPort.getText().toString();
-                        listener.createNewItemWithDialogValues(IP, Port);
+                        listener.editItemWithDialogValues(IP, Port);
                     }
                 });
         editTextIP = view.findViewById(R.id.edit_IP);
@@ -49,13 +49,13 @@ public class NewItemDialog extends AppCompatDialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            listener = (DialogListener) context;
+            listener = (EditItemDialog.DialogListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + "must implement DialogListener");
         }
     }
 
     public interface DialogListener {
-        void createNewItemWithDialogValues(String IP, String Port);
+        void editItemWithDialogValues(String IP, String Port);
     }
 }

@@ -17,13 +17,13 @@ public class SplashScreenActivity extends AppCompatActivity {
         EasySplashScreen config = new EasySplashScreen(SplashScreenActivity.this)
                 .withFullScreen()
                 .withTargetActivity(MainActivity.class)
-                .withSplashTimeOut(1500)//timeout
+                .withSplashTimeOut(2500)//timeout
                 .withBackgroundColor(Color.parseColor("#1a1b29"))
-                .withHeaderText("Header")
-                .withFooterText("Footer")
-                .withBeforeLogoText("Before Logo Text")
-                .withAfterLogoText("After Logo Text")
-                .withLogo((R.mipmap.ic_launcher_round));
+                .withHeaderText("Binghamton University")
+                .withFooterText("CS426")
+                .withBeforeLogoText("Remote Desktop")
+                .withAfterLogoText("Voice Assistant")
+                .withLogo((R.drawable.ic_eq));
         config.getHeaderTextView().setTextColor(Color.WHITE);
         config.getFooterTextView().setTextColor(Color.WHITE);
         config.getBeforeLogoTextView().setTextColor(Color.WHITE);
