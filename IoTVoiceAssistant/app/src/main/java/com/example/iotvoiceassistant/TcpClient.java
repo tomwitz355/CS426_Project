@@ -27,6 +27,7 @@ public class TcpClient {
     private PrintWriter mBufferOut;
     // used to read messages from the server
     private InputStream istream;
+    private BufferedReader mBufferIn;
 
     /**
      * Constructor of the class. OnMessagedReceived listens for the messages received from server
@@ -97,13 +98,15 @@ public class TcpClient {
 
                 //receives the message which the server sends back
                 istream = socket.getInputStream();
+                mBufferIn = new BufferedReader(new InputStreamReader(istream));
+
 
                 //in this while the client listens for the messages sent by the server
                 while (mRun) {
 
-                    //mServerMessage = mBufferIn.readLine();
+                    mServerMessage = mBufferIn.readLine();
 
-                    if (istream != null && mMessageListener != null) {
+                    if (mServerMessage != null && mMessageListener != null) {
                         //call the method messageReceived from MyActivity class
                         mMessageListener.messageReceived(istream);
                     }
