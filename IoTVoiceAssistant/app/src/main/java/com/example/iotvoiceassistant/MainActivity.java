@@ -30,7 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -45,7 +44,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -422,15 +420,15 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     }
     public void writeFIleToStorage(Context context, String filename, InputStream is){
 
+        try(OutputStream fos = new FileOutputStream((Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+ filename))){
 
-        try(OutputStream fos = new FileOutputStream((Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+ filename)){
-            OutputStream fos = new FileOutputStream(newfile)
-            //OutputStream out = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename);
 
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             byte[] aByte = new byte[1024];
             int bytesRead = is.read(aByte);
             System.out.println(bytesRead + " bytes read");
+
+
             bos.write(aByte);
 
             bos.close();
