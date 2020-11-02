@@ -426,9 +426,8 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         if(!dir.exists()) dir.mkdir();
         File newfile = new File(dir, filename);
         System.out.println("2");
-        try(OutputStream fos = new FileOutputStream(newfile)){
-
-
+        try(OutputStream fos = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename)){
+            //OutputStream fos = new FileOutputStream(newfile)
             //OutputStream out = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename);
 
             System.out.println("3");
