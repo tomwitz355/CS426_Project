@@ -232,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         Connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                new ConnectTask().execute(""); // START CONNECTION HERE
                 voiceButtonStart();
             }
         });
@@ -303,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 return;
             }
             String spokenText = results.get(0);
-            new ConnectTask().execute(""); // START CONNECTION HERE
+
             // Do something with spokenText
             if (mTcpClient != null) {
                 mTcpClient.sendMessage(spokenText);

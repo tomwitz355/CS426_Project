@@ -12,14 +12,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2ce1788e-4cdc-445d-b016-ba514a9ff70f" name="Default Changelist" comment="UI Revamped">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/iotvoiceassistant/EditItemDialog.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_eq.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/assetWizardSettings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/assetWizardSettings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/iotvoiceassistant/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/iotvoiceassistant/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/iotvoiceassistant/NewItemDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/iotvoiceassistant/NewItemDialog.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/iotvoiceassistant/SplashScreenActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/iotvoiceassistant/SplashScreenActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/iotvoiceassistant/TcpClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/iotvoiceassistant/TcpClient.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -220,11 +214,11 @@
       <screen x="62" y="0" width="1858" height="1080" />
     </state>
     <state x="154" y="92" width="1674" height="896" key="com.android.tools.idea.avdmanager.AvdListDialog/62.0.1858.1080/1920.0.1858.1080@62.0.1858.1080" timestamp="1604104380445" />
-    <state x="477" y="331" key="com.intellij.ide.util.TipDialog" timestamp="1604255110363">
+    <state x="477" y="331" key="com.intellij.ide.util.TipDialog" timestamp="1604273585848">
       <screen x="62" y="0" width="1858" height="1080" />
     </state>
     <state x="2335" y="331" key="com.intellij.ide.util.TipDialog/62.0.1858.1080/1920.0.1858.1080@1920.0.1858.1080" timestamp="1604107658188" />
-    <state x="477" y="331" key="com.intellij.ide.util.TipDialog/62.0.1858.1080/1920.0.1858.1080@62.0.1858.1080" timestamp="1604255110363" />
+    <state x="477" y="331" key="com.intellij.ide.util.TipDialog/62.0.1858.1080/1920.0.1858.1080@62.0.1858.1080" timestamp="1604273585848" />
     <state x="612" y="282" key="psd.add.library.dependency.panel.dimension" timestamp="1604107760256">
       <screen x="62" y="0" width="1858" height="1080" />
     </state>
