@@ -421,9 +421,9 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     }
     public void writeFIleToStorage(Context context, String filename, InputStream is){
-               File newfile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), filename);
 
-        try(OutputStream fos = new FileOutputStream(newfile)){
+
+        try(OutputStream fos = new FileOutputStream((Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+ filename)){
             //OutputStream fos = new FileOutputStream(newfile)
             //OutputStream out = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename);
 
@@ -443,6 +443,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             System.out.println("IO Exception");
         }
         showAlerter("File Received", "location: "+Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename);
+        File newfile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), filename);
         shareFile(newfile);
         mTcpClient.stopClient();
 
