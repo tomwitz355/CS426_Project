@@ -424,14 +424,12 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
 
         try(OutputStream fos = new FileOutputStream((Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+ filename)){
-            //OutputStream fos = new FileOutputStream(newfile)
+            OutputStream fos = new FileOutputStream(newfile)
             //OutputStream out = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename);
 
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             byte[] aByte = new byte[1024];
-            int bytesRead;
-
-            bytesRead = is.read(aByte);
+            int bytesRead = is.read(aByte);
             System.out.println(bytesRead + " bytes read");
             bos.write(aByte);
 
