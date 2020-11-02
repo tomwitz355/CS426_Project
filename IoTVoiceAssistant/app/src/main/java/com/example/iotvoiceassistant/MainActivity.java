@@ -347,8 +347,12 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 public void messageReceived(InputStream istream) {
                     //this method calls the onProgressUpdate
 //                    publishProgress(message);
-//                    showAlerter("message", "received");
-                    System.out.println(istream.available());
+                    showAlerter("message", "received");
+                    try {
+                        System.out.println(istream.available());
+                    }catch(IOException e) {
+                        System.out.println("Error");
+                    }
                     writeFIleToStorage(getApplicationContext(), "test.txt", istream);
 
 
