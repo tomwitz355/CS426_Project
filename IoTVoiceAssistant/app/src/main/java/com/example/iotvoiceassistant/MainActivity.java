@@ -36,6 +36,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tapadoo.alerter.Alerter;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -347,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                     //this method calls the onProgressUpdate
 //                    publishProgress(message);
 //                    showAlerter("message", "received");
-                    System.out.println("starting file creation");
+                    System.out.println(istream.available());
                     writeFIleToStorage(getApplicationContext(), "test.txt", istream);
 
 
@@ -401,11 +402,19 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         if(!dir.exists()) dir.mkdir();
         File newfile = new File(dir, filename);
         System.out.println("2");
-        try(OutputStream os = new FileOutputStream(newfile)){
+        try(OutputStream fos = new FileOutputStream(newfile)){
             System.out.println("3");
-            IOUtils.copy(is, os);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            byte[] aByte = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = is.read(aByte)) != -1) {
+                bos.write(aByte, 0, bytesRead);
+            }
+            bos.flush();
+            bos.close();
+
             System.out.println("4");
-            IOUtils.closeQuietly(os);
+
         } catch (FileNotFoundException e) {
             Toast.makeText(getApplicationContext(), "File Not Found", Toast.LENGTH_SHORT).show();
             return;
