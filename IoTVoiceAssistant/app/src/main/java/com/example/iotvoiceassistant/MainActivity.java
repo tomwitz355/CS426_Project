@@ -345,10 +345,10 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 //here the messageReceived method is implemented
                 public void messageReceived(InputStream istream) {
                     //this method calls the onProgressUpdate
-                    publishProgress(message);
-                    Toast.makeText(getApplicationContext(), "message received ", Toast.LENGTH_SHORT).show();
-                    Log.d("RESPONSE FROM SERVER", "starting file creation");
-//                    writeFIleToStorage(getApplicationContext(), "test.txt", istream);
+//                    publishProgress(message);
+//                    showAlerter("message", "received");
+                    System.out.println("starting file creation");
+                    writeFIleToStorage(getApplicationContext(), "test.txt", istream);
 
 
                 }
@@ -397,14 +397,14 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     }
     public void writeFIleToStorage(Context context, String filename, InputStream is){
         File dir = new File(context.getFilesDir(), "received_files");
-        Log.d("FILE WRITING", "DIR MADE/FOUND");
+        System.out.println("1");
         if(!dir.exists()) dir.mkdir();
         File newfile = new File(dir, filename);
-        Log.d("FILE WRITING", "FILE MADE/FOUND");
+        System.out.println("2");
         try(OutputStream os = new FileOutputStream(newfile)){
-            Log.d("FILE WRITING", "COPYING DATA");
+            System.out.println("3");
             IOUtils.copy(is, os);
-            Log.d("FILE WRITING", "COPIED");
+            System.out.println("4");
             IOUtils.closeQuietly(os);
         } catch (FileNotFoundException e) {
             Toast.makeText(getApplicationContext(), "File Not Found", Toast.LENGTH_SHORT).show();
