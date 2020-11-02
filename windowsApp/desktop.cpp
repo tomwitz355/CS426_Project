@@ -2,12 +2,17 @@
 
 #define WIN32_LEAN_AND_MEAN
 
-#include <windows.h>
+#define byte win_byte_override
+
+#include <Windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <filesystem>
 #include <string>
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -98,14 +103,28 @@ int __cdecl main(void)
         char recvbuf[DEFAULT_BUFLEN] = {0};
         iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
         if (iResult > 0) {
-            printf("Bytes received: %d\n", iResult);
-            printf("%s\n",recvbuf);
+            // printf("Bytes received: %d\n", iResult);
+            // printf("%s\n",recvbuf);
 
         // Echo the buffer back to the sender
             string temp = string(recvbuf);
             temp.pop_back();
             temp += " sent from server\n";
-            iSendResult = send( ClientSocket, temp.c_str() ,temp.length(), 0 );
+            ifstream input("example.txt", ios::in|ios::binary);
+            filesystem::path p {"example.txt"};
+            auto length = filesystem::file_size(p);
+            char *buffer = new char [length];
+            input.read (buffer,length);
+
+            ofstream output("test.txt", ios::out|ios::binary);
+            output.write(buffer, sizeof(buffer));
+
+            delete buffer;
+
+            input.close();
+            output.close();
+
+            iSendResult = send( ClientSocket, buffer , length, 0 );
             if (iSendResult == SOCKET_ERROR) {
                 printf("send failed with error: %d\n", WSAGetLastError());
                 closesocket(ClientSocket);
