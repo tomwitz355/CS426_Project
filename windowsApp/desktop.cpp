@@ -21,48 +21,19 @@ using namespace std;
 #define DEFAULT_PORT "12000"
 
 
-int iResult;
-
-SOCKET ListenSocket = INVALID_SOCKET;
-SOCKET ClientSocket = INVALID_SOCKET;
-
-
-int iSendResult;
-char recvbuf[DEFAULT_BUFLEN];
-int recvbuflen = DEFAULT_BUFLEN;
-
-DWORD WINAPI sendThread(void* data) {
-  cout << "entering" << endl;
-  char * t1 = (char*)data;
-  soundEngine.playSound(t1);
-  cout << "exiting"  << endl;
-  return 0;
-}
-
-DWORD WINAPI receiveThread(void* data) {
-    do{
-        ClientSocket = accept(ListenSocket, NULL, NULL);
-        if (ClientSocket == INVALID_SOCKET) {
-            printf("accept failed with error: %d\n", WSAGetLastError());
-            closesocket(ListenSocket);
-            WSACleanup();
-            return 1;
-        }
-    }
-    while(ClientSocket != ){
-
-        printf("new connection\n");
-    }
-
-
-
-  return 0;
-}
-
 int __cdecl main(void){
     WSADATA wsaData;
     struct addrinfo *result = NULL;
     struct addrinfo hints;
+    int iResult;
+
+    SOCKET ListenSocket = INVALID_SOCKET;
+    SOCKET ClientSocket = INVALID_SOCKET;
+
+
+    int iSendResult;
+    char recvbuf[DEFAULT_BUFLEN];
+    int recvbuflen = DEFAULT_BUFLEN;
 
     // Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
@@ -115,13 +86,80 @@ int __cdecl main(void){
     }
 
     // Accept a client socket
-    CreateThread(NULL, 0, receiveThread, NULL, 0, NULL);
+    while(true){
+        ClientSocket = accept(ListenSocket, NULL, NULL);
+        if (ClientSocket == INVALID_SOCKET) {
+            printf("accept failed with error: %d\n", WSAGetLastError());
+            closesocket(ListenSocket);
+            WSACleanup();
+            return 1;
+        }
+        printf("new connection\n");
+        // CreateThread(NULL, 0, receiveThread, NULL, 0, NULL);
+        char recvbuf[DEFAULT_BUFLEN] = {0};
+        iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
+        if (iResult > 0) {
+            // printf("Bytes received: %d\n", iResult);
+            // printf("%s\n",recvbuf);
+            string temp = string(recvbuf);
+            temp.pop_back();
+            std::istringstream ss(temp);
+
+            std::string token;
+            ifstream input("example.txt", ios::in|ios::binary);
+            char *buffer;
+            int length = 0;
+            bool sent = false;
+            while(ss>>token){
+                if(token == "file"){
+                    filesystem::path p {"example.txt"};
+                    int length = filesystem::file_size(p);
+                    buffer = new char [length];
+                    input.read (buffer,length);
+                    iSendResult = send( ClientSocket, buffer , length, 0 );
+                    sent = true;
+                    printf("Bytes sent: %d\n", length);
+                    if (iSendResult == SOCKET_ERROR) {
+                        printf("send failed with error: %d\n", WSAGetLastError());
+                        closesocket(ClientSocket);
+                        WSACleanup();
+                        return 1;
+                    }
+                }
+            }
+            if(!sent){
+                cout << "made it here" << endl;
+                char empty[] = "0";
+                iSendResult = send( ClientSocket, empty , 1, 0 );
+                if (iSendResult == SOCKET_ERROR) {
+                    printf("send failed with error: %d\n", WSAGetLastError());
+                    closesocket(ClientSocket);
+                    WSACleanup();
+                    return 1;
+                }
+            }
+            input.close();
+            delete buffer;
+            closesocket(ClientSocket);
+
+        }
+        else if (iResult == 0)
+            printf("Connection closing...\n");
+        else  {
+            printf("recv failed with error: %d\n", WSAGetLastError());
+            closesocket(ClientSocket);
+            WSACleanup();
+            return 1;
+        }
+    }
+
 
 
     // No longer need server socket
-    closesocket(ListenSocket);
+    // closesocket(ListenSocket);
 
     // Receive until the peer shuts down the connection
+/*
     do {
         char recvbuf[DEFAULT_BUFLEN] = {0};
         iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
@@ -181,7 +219,7 @@ int __cdecl main(void){
         }
 
     } while (iResult > 0);
-
+*/
     // shutdown the connection since we're done
     iResult = shutdown(ClientSocket, SD_SEND);
     if (iResult == SOCKET_ERROR) {
