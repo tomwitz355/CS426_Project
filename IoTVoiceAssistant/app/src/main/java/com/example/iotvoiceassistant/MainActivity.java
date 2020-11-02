@@ -411,7 +411,9 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             byte[] aByte = new byte[1024];
             int bytesRead;
+            System.out.println("Reading socket...");
             while ((bytesRead = is.read(aByte)) != -1) {
+                System.out.println(bytesRead);
                 bos.write(aByte, 0, bytesRead);
             }
             bos.flush();
@@ -420,10 +422,10 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             System.out.println("4");
 
         } catch (FileNotFoundException e) {
-            Toast.makeText(getApplicationContext(), "File Not Found", Toast.LENGTH_SHORT).show();
+            System.out.println("F N F");
             return;
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "IO Exception", Toast.LENGTH_SHORT).show();
+            System.out.println("IO Exception");
             return;
         }
         showAlerter("File Received", "file written to internal storage");
