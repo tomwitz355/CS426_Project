@@ -345,9 +345,10 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 //here the messageReceived method is implemented
                 public void messageReceived(InputStream istream) {
                     //this method calls the onProgressUpdate
-                    //publishProgress(message);
+                    publishProgress(message);
+                    Toast.makeText(getApplicationContext(), "message received ", Toast.LENGTH_SHORT).show();
                     Log.d("RESPONSE FROM SERVER", "starting file creation");
-                    writeFIleToStorage(getApplicationContext(), "test.txt", istream);
+//                    writeFIleToStorage(getApplicationContext(), "test.txt", istream);
 
 
                 }

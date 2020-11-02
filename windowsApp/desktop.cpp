@@ -109,6 +109,7 @@ int __cdecl main(void)
         // Echo the buffer back to the sender
             string temp = string(recvbuf);
             temp.pop_back();
+            cout << temp << endl;
             temp += " sent from server\n";
             ifstream input("example.txt", ios::in|ios::binary);
             filesystem::path p {"example.txt"};
@@ -130,7 +131,7 @@ int __cdecl main(void)
                 WSACleanup();
                 return 1;
             }
-            printf("Bytes sent: %d\n", iSendResult);
+            printf("Bytes sent: %d\n", length);
         }
         else if (iResult == 0)
             printf("Connection closing...\n");
