@@ -346,6 +346,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 public void messageReceived(InputStream istream) {
                     //this method calls the onProgressUpdate
                     //publishProgress(message);
+                    Log.d("RESPONSE FROM SERVER", "starting file creation");
                     writeFIleToStorage(getApplicationContext(), "test.txt", istream);
 
 
@@ -382,20 +383,27 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         startActivity(Intent.createChooser(shareIntent, "Share response text file..."));
     }
     private void shareFile(File file){
+        Log.d("FILE WRITING", "SHARING...");
         Uri contentUri = FileProvider.getUriForFile(this, "com.example.iotvoiceassistant", file);
         Intent intent = new Intent();
+        Log.d("FILE WRITING", "INTENT MADE");
         intent.setAction(Intent.ACTION_SEND).putExtra(Intent.EXTRA_STREAM, contentUri)
                 .setType("application/txt");
+        Log.d("FILE WRITING", "STARTING ACTIVITY");
         startActivity(Intent.createChooser(intent, "Share received text file..."));
 
 
     }
     public void writeFIleToStorage(Context context, String filename, InputStream is){
         File dir = new File(context.getFilesDir(), "received_files");
+        Log.d("FILE WRITING", "DIR MADE/FOUND");
         if(!dir.exists()) dir.mkdir();
         File newfile = new File(dir, filename);
+        Log.d("FILE WRITING", "FILE MADE/FOUND");
         try(OutputStream os = new FileOutputStream(newfile)){
+            Log.d("FILE WRITING", "COPYING DATA");
             IOUtils.copy(is, os);
+            Log.d("FILE WRITING", "COPIED");
             IOUtils.closeQuietly(os);
         } catch (FileNotFoundException e) {
             Toast.makeText(getApplicationContext(), "File Not Found", Toast.LENGTH_SHORT).show();
