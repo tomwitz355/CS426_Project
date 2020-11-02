@@ -108,6 +108,7 @@ public class TcpClient {
 
                     if (istream.available() > 0 && mMessageListener != null) {
                         //call the method messageReceived from MyActivity class
+
                         mMessageListener.messageReceived(istream);
                     }
 

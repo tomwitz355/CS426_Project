@@ -9,6 +9,7 @@
 #include <ws2tcpip.h>
 #include <filesystem>
 #include <string>
+#include <sstream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -19,20 +20,49 @@ using namespace std;
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "12000"
 
-int __cdecl main(void)
-{
+
+int iResult;
+
+SOCKET ListenSocket = INVALID_SOCKET;
+SOCKET ClientSocket = INVALID_SOCKET;
+
+
+int iSendResult;
+char recvbuf[DEFAULT_BUFLEN];
+int recvbuflen = DEFAULT_BUFLEN;
+
+DWORD WINAPI sendThread(void* data) {
+  cout << "entering" << endl;
+  char * t1 = (char*)data;
+  soundEngine.playSound(t1);
+  cout << "exiting"  << endl;
+  return 0;
+}
+
+DWORD WINAPI receiveThread(void* data) {
+    do{
+        ClientSocket = accept(ListenSocket, NULL, NULL);
+        if (ClientSocket == INVALID_SOCKET) {
+            printf("accept failed with error: %d\n", WSAGetLastError());
+            closesocket(ListenSocket);
+            WSACleanup();
+            return 1;
+        }
+    }
+    while(ClientSocket != ){
+
+        printf("new connection\n");
+    }
+
+
+
+  return 0;
+}
+
+int __cdecl main(void){
     WSADATA wsaData;
-    int iResult;
-
-    SOCKET ListenSocket = INVALID_SOCKET;
-    SOCKET ClientSocket = INVALID_SOCKET;
-
     struct addrinfo *result = NULL;
     struct addrinfo hints;
-
-    int iSendResult;
-    char recvbuf[DEFAULT_BUFLEN];
-    int recvbuflen = DEFAULT_BUFLEN;
 
     // Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
@@ -85,15 +115,8 @@ int __cdecl main(void)
     }
 
     // Accept a client socket
-    ClientSocket = accept(ListenSocket, NULL, NULL);
-    if (ClientSocket == INVALID_SOCKET) {
-        printf("accept failed with error: %d\n", WSAGetLastError());
-        closesocket(ListenSocket);
-        WSACleanup();
-        return 1;
-    }
+    CreateThread(NULL, 0, receiveThread, NULL, 0, NULL);
 
-    printf("connection\n");
 
     // No longer need server socket
     closesocket(ListenSocket);
@@ -109,29 +132,44 @@ int __cdecl main(void)
         // Echo the buffer back to the sender
             string temp = string(recvbuf);
             temp.pop_back();
-            cout << temp << endl;
-            temp += " sent from server\n";
+            std::istringstream ss(temp);
+
+            std::string token;
             ifstream input("example.txt", ios::in|ios::binary);
-            filesystem::path p {"example.txt"};
-            auto length = filesystem::file_size(p);
-            char *buffer = new char [length];
-            input.read (buffer,length);
-
-            ofstream output("test.txt", ios::out|ios::binary);
-            output.write(buffer, length);
-
-            input.close();
-            output.close();
-
-            iSendResult = send( ClientSocket, buffer , length, 0 );
-            delete buffer;
-            if (iSendResult == SOCKET_ERROR) {
-                printf("send failed with error: %d\n", WSAGetLastError());
-                closesocket(ClientSocket);
-                WSACleanup();
-                return 1;
+            char *buffer;
+            int length = 0;
+            bool sent = false;
+            while(ss>>token){
+                if(token == "file"){
+                    filesystem::path p {"example.txt"};
+                    int length = filesystem::file_size(p);
+                    buffer = new char [length];
+                    input.read (buffer,length);
+                    iSendResult = send( ClientSocket, buffer , length, 0 );
+                    sent = true;
+                    printf("Bytes sent: %d\n", length);
+                    if (iSendResult == SOCKET_ERROR) {
+                        printf("send failed with error: %d\n", WSAGetLastError());
+                        closesocket(ClientSocket);
+                        WSACleanup();
+                        return 1;
+                    }
+                }
             }
-            printf("Bytes sent: %d\n", length);
+            if(!sent){
+                cout << "made it here" << endl;
+                char empty[] = "0";
+                iSendResult = send( ClientSocket, empty , 1, 0 );
+                if (iSendResult == SOCKET_ERROR) {
+                    printf("send failed with error: %d\n", WSAGetLastError());
+                    closesocket(ClientSocket);
+                    WSACleanup();
+                    return 1;
+                }
+            }
+            input.close();
+            delete buffer;
+
         }
         else if (iResult == 0)
             printf("Connection closing...\n");

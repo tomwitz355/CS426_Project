@@ -368,6 +368,11 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                     showAlerter("message", "received");
                     try {
                         System.out.println(istream.available());
+                        if(istream.available()==1){
+                            showAlerter("Response: ", "invalid command");
+                            mTcpClient.stopClient();
+                            return;
+                        }
                     }catch(IOException e) {
                         System.out.println("Error");
                     }
@@ -444,7 +449,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         }
         showAlerter("File Received", "location: "+Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename);
 
-        shareFile(newfile);
+//        shareFile(newfile);
         mTcpClient.stopClient();
 
 
