@@ -421,22 +421,18 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     }
     public void writeFIleToStorage(Context context, String filename, InputStream is){
-        File dir = new File(Environment.getExternalStorageDirectory(), "received_files");
+               File newfile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), filename);
 
-        if(!dir.exists()) dir.mkdir();
-        File newfile = new File(dir, filename);
-
-        try(OutputStream fos = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"received_files"+filename)){
+        try(OutputStream fos = new FileOutputStream(newfile)){
             //OutputStream fos = new FileOutputStream(newfile)
             //OutputStream out = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename);
 
-            System.out.println("3");
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             byte[] aByte = new byte[1024];
             int bytesRead;
 
             bytesRead = is.read(aByte);
-            System.out.println(bytesRead + "bytes read");
+            System.out.println(bytesRead + " bytes read");
             bos.write(aByte);
 
             bos.close();
@@ -446,7 +442,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         } catch (IOException e) {
             System.out.println("IO Exception");
         }
-        showAlerter("File Received", "location: "+Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"received_files"+filename);
+        showAlerter("File Received", "location: "+Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename);
         shareFile(newfile);
         mTcpClient.stopClient();
 
