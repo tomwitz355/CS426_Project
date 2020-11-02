@@ -117,14 +117,13 @@ int __cdecl main(void)
             input.read (buffer,length);
 
             ofstream output("test.txt", ios::out|ios::binary);
-            output.write(buffer, sizeof(buffer));
-
-            delete buffer;
+            output.write(buffer, length);
 
             input.close();
             output.close();
 
             iSendResult = send( ClientSocket, buffer , length, 0 );
+            delete buffer;
             if (iSendResult == SOCKET_ERROR) {
                 printf("send failed with error: %d\n", WSAGetLastError());
                 closesocket(ClientSocket);
