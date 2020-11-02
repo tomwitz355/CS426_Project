@@ -416,17 +416,16 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 System.out.println(bytesRead);
                 bos.write(aByte, 0, bytesRead);
             }
+            System.out.println("4");
             bos.flush();
             bos.close();
 
-            System.out.println("4");
+
 
         } catch (FileNotFoundException e) {
             System.out.println("F N F");
-            return;
         } catch (IOException e) {
             System.out.println("IO Exception");
-            return;
         }
         showAlerter("File Received", "file written to internal storage");
         shareFile(newfile);
