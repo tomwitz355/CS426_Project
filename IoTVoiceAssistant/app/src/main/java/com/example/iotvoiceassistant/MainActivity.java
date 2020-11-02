@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.Menu;
@@ -426,6 +427,10 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         File newfile = new File(dir, filename);
         System.out.println("2");
         try(OutputStream fos = new FileOutputStream(newfile)){
+
+
+            //OutputStream out = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename);
+
             System.out.println("3");
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             byte[] aByte = new byte[1024];
@@ -433,14 +438,11 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             System.out.println("Reading socket...");
             while ((bytesRead = is.read(aByte)) != -1) {
                 System.out.println(bytesRead);
-                bos.write(aByte, 0, bytesRead);
+                bos.write(aByte);
                 System.out.println("wrote bytes");
             }
             System.out.println("4");
-            bos.flush();
             bos.close();
-
-
 
         } catch (FileNotFoundException e) {
             System.out.println("F N F");
