@@ -421,12 +421,12 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     }
     public void writeFIleToStorage(Context context, String filename, InputStream is){
-        File dir = new File(context.getFilesDir(), "received_files");
-        System.out.println("1");
+        File dir = new File(Environment.getExternalStorageDirectory(), "received_files");
+
         if(!dir.exists()) dir.mkdir();
         File newfile = new File(dir, filename);
-        System.out.println("2");
-        try(OutputStream fos = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename)){
+
+        try(OutputStream fos = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"received_files"+filename)){
             //OutputStream fos = new FileOutputStream(newfile)
             //OutputStream out = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename);
 
@@ -434,12 +434,11 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             byte[] aByte = new byte[1024];
             int bytesRead;
-            System.out.println("Reading socket...");
+
             bytesRead = is.read(aByte);
-                System.out.println(bytesRead);
-                bos.write(aByte);
-                System.out.println("wrote bytes");
-            System.out.println("4");
+            System.out.println(bytesRead + "bytes read");
+            bos.write(aByte);
+
             bos.close();
 
         } catch (FileNotFoundException e) {
@@ -447,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         } catch (IOException e) {
             System.out.println("IO Exception");
         }
-        showAlerter("File Received", "file written to internal storage");
+        showAlerter("File Received", "location: "+Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"received_files"+filename);
         shareFile(newfile);
         mTcpClient.stopClient();
 
