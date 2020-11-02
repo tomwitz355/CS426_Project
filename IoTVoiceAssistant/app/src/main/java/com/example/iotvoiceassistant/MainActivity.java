@@ -419,8 +419,8 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     }
     public void writeFIleToStorage(Context context, String filename, InputStream is){
-
-        try(OutputStream fos = new FileOutputStream((Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+ filename))){
+        File newfile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), filename);
+        try(OutputStream fos = new FileOutputStream((newfile))){
 
 
             BufferedOutputStream bos = new BufferedOutputStream(fos);
@@ -439,7 +439,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             System.out.println("IO Exception");
         }
         showAlerter("File Received", "location: "+Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename);
-        File newfile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), filename);
+
         shareFile(newfile);
         mTcpClient.stopClient();
 
