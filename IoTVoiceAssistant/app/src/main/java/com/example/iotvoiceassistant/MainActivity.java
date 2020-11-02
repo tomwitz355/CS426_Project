@@ -419,8 +419,12 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     }
     public void writeFIleToStorage(Context context, String filename, InputStream is){
-        File newfile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), filename);
-        try(OutputStream fos = new FileOutputStream((newfile))){
+        File theDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "received_files");
+        if (!theDir.exists()){
+            theDir.mkdirs();
+        }
+        File newfile = new File(theDir, filename);
+        try(OutputStream fos = new FileOutputStream(newfile)){
 
 
             BufferedOutputStream bos = new BufferedOutputStream(fos);
