@@ -436,11 +436,10 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             byte[] aByte = new byte[1024];
             int bytesRead;
             System.out.println("Reading socket...");
-            while ((bytesRead = is.read(aByte)) != -1) {
+            bytesRead = is.read(aByte);
                 System.out.println(bytesRead);
                 bos.write(aByte);
                 System.out.println("wrote bytes");
-            }
             System.out.println("4");
             bos.close();
 
