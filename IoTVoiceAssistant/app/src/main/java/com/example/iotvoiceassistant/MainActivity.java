@@ -1,11 +1,13 @@
 package com.example.iotvoiceassistant;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -24,6 +26,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ShareCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,6 +36,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tapadoo.alerter.Alerter;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import org.apache.commons.io.IOUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -332,9 +343,12 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             mTcpClient = new TcpClient(new TcpClient.OnMessageReceived() {
                 @Override
                 //here the messageReceived method is implemented
-                public void messageReceived(String message) {
+                public void messageReceived(InputStream istream) {
                     //this method calls the onProgressUpdate
-                    publishProgress(message);
+                    //publishProgress(message);
+                    writeFIleToStorage(getApplicationContext(), "test.txt", istream);
+
+
                 }
             }, CURRENT_ITEM.getIP(), Integer.parseInt(CURRENT_ITEM.getPort()));
             mTcpClient.run();
@@ -366,6 +380,36 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, string);
         startActivity(Intent.createChooser(shareIntent, "Share response text file..."));
+    }
+    private void shareFile(File file){
+        Uri contentUri = FileProvider.getUriForFile(this, "com.example.iotvoiceassistant", file);
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND).putExtra(Intent.EXTRA_STREAM, contentUri)
+                .setType("application/txt");
+        startActivity(Intent.createChooser(intent, "Share received text file..."));
+
+
+    }
+    public void writeFIleToStorage(Context context, String filename, InputStream is){
+        File dir = new File(context.getFilesDir(), "received_files");
+        if(!dir.exists()) dir.mkdir();
+        File newfile = new File(dir, filename);
+        try(OutputStream os = new FileOutputStream(newfile)){
+            IOUtils.copy(is, os);
+            IOUtils.closeQuietly(os);
+        } catch (FileNotFoundException e) {
+            Toast.makeText(getApplicationContext(), "File Not Found", Toast.LENGTH_SHORT).show();
+            return;
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), "IO Exception", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        showAlerter("File Received", "file written to internal storage");
+        shareFile(newfile);
+        mTcpClient.stopClient();
+
+
+
     }
 
 }

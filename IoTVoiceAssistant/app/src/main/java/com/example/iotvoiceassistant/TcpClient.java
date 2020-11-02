@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -25,7 +26,7 @@ public class TcpClient {
     // used to send messages
     private PrintWriter mBufferOut;
     // used to read messages from the server
-    private BufferedReader mBufferIn;
+    private InputStream istream;
 
     /**
      * Constructor of the class. OnMessagedReceived listens for the messages received from server
@@ -69,7 +70,7 @@ public class TcpClient {
         }
 
         mMessageListener = null;
-        mBufferIn = null;
+        istream = null;
         mBufferOut = null;
         mServerMessage = null;
     }
@@ -95,17 +96,16 @@ public class TcpClient {
                 mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 
                 //receives the message which the server sends back
-                mBufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+                istream = socket.getInputStream();
 
                 //in this while the client listens for the messages sent by the server
                 while (mRun) {
 
-                    mServerMessage = mBufferIn.readLine();
+                    //mServerMessage = mBufferIn.readLine();
 
-                    if (mServerMessage != null && mMessageListener != null) {
+                    if (istream != null && mMessageListener != null) {
                         //call the method messageReceived from MyActivity class
-                        mMessageListener.messageReceived(mServerMessage);
+                        mMessageListener.messageReceived(istream);
                     }
 
                 }
@@ -129,7 +129,7 @@ public class TcpClient {
     //Declare the interface. The method messageReceived(String message) will must be implemented in the Activity
     //class at on AsyncTask doInBackground
     public interface OnMessageReceived {
-        public void messageReceived(String message);
+        void messageReceived(InputStream is);
     }
 
 }
