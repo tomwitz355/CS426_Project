@@ -125,10 +125,10 @@ int __cdecl main(void){
                         WSACleanup();
                         return 1;
                     }
+                    delete buffer;
                 }
             }
             if(!sent){
-                cout << "made it here" << endl;
                 char empty[] = "0";
                 iSendResult = send( ClientSocket, empty , 1, 0 );
                 if (iSendResult == SOCKET_ERROR) {
@@ -139,8 +139,8 @@ int __cdecl main(void){
                 }
             }
             input.close();
-            delete buffer;
             closesocket(ClientSocket);
+
 
         }
         else if (iResult == 0)
