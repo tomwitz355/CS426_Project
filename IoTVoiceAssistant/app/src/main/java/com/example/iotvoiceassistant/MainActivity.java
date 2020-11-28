@@ -202,8 +202,9 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     /* DIALOG BOX FOR GETTING FILE NAME FROM USER */
     public void openFileNameGrabberDialog() {
-        Toast.makeText(getApplicationContext(), "Incoming file...", Toast.LENGTH_SHORT).show();
+        showAlerter("DEBUG", "creating dialog box");
         FileNameGrabberDialog dialog = new FileNameGrabberDialog();
+        showAlerter("DEBUG", "showing dialog box");
         dialog.show(getSupportFragmentManager(), "dialog_box_file");
     }
 
@@ -213,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         if (gistream == null) {
             showAlerter("Error", "input stream null");
         } else {
-            Toast.makeText(getApplicationContext(), "Name the file...", Toast.LENGTH_SHORT).show();
+
             writeFIleToStorage(filename, gistream);
 
             gistream = null;
@@ -460,6 +461,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     // file received
                                     showAlerter("Response: ", "case 2");
                                     openFileNameGrabberDialog();
+                                    showAlerter("DEBUG", "stopping client");
                                     mTcpClient.stopClient();
                                     return;
                                 case '3':
