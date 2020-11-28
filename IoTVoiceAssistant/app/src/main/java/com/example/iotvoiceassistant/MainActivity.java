@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     private TcpClient mTcpClient;
     // MISC UI RELATED
     private FloatingActionButton addButton;
-    private boolean fileDone = true;
+    private boolean fileDone = false;
     /********************************** INIT *********************************/
 
     @Override
