@@ -368,18 +368,6 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         startActivity(Intent.createChooser(shareIntent, "Share response text file..."));
     }
 
-    private void shareFile(File file) {
-        Log.d("FILE WRITING", "SHARING...");
-        Uri contentUri = FileProvider.getUriForFile(this, "com.example.iotvoiceassistant", file);
-        Intent intent = new Intent();
-        Log.d("FILE WRITING", "INTENT MADE");
-        intent.setAction(Intent.ACTION_SEND).putExtra(Intent.EXTRA_STREAM, contentUri)
-                .setType("application/txt");
-        Log.d("FILE WRITING", "STARTING ACTIVITY");
-        startActivity(Intent.createChooser(intent, "Share received text file..."));
-
-
-    }
 
     public void writeFIleToStorage(Context context, String filename, InputStream is, boolean share) {
         File theDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "received_files");
@@ -409,11 +397,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             System.out.println("IO Exception");
 
         }
-
-        if (share) {
-            shareFile(NewFile);
-        }
-
+        
         showAlerter("File Received", "location: " + Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename);
 
         mTcpClient.stopClient();
