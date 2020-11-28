@@ -216,8 +216,8 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         } else {
 
             writeFIleToStorage(filename, gistream);
-
             gistream = null;
+            mTcpClient.stopClient();
         }
 
     }
@@ -462,7 +462,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     showAlerter("Response: ", "case 2");
                                     openFileNameGrabberDialog();
                                     showAlerter("DEBUG", "stopping client");
-                                    mTcpClient.stopClient();
+
                                     return;
                                 case '3':
                                     // ping test
