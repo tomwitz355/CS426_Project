@@ -23,7 +23,7 @@ public class FileNameGrabberDialog extends AppCompatDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        view = inflater.inflate(R.layout.layout_dialog, null);
+        view = inflater.inflate(R.layout.new_file_dialog, null);
 
         builder.setView(view).setTitle("Save File As...")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

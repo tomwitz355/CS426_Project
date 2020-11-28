@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     /* DIALOG BOX FOR GETTING FILE NAME FROM USER */
     public void openFileNameGrabberDialog() {
         FileNameGrabberDialog dialog = new FileNameGrabberDialog();
-        dialog.show(getSupportFragmentManager(), "dialog_box_file_name");
+        dialog.show(getSupportFragmentManager(), "dialog_box_file");
     }
 
     /* METHOD CALLED ON '+' BUTTON PRESS TO ADD A NEW ITEM*/
@@ -442,27 +442,35 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                 case '0':
                                     // invalid command
                                     showAlerter("Response: ", "invalid command");
-                                    mTcpClient.stopClient(); // TODO remove this
+                                    mTcpClient.stopClient();
                                     return;
                                 case '1':
                                     showAlerter("Response: ", "command successfully executed");
-                                    break;
+                                    mTcpClient.stopClient();
+                                    return;
                                 case '2':
                                     // file received
                                     showAlerter("Response: ", "file received");
                                     openFileNameGrabberDialog();
                                     writeFIleToStorage(getApplicationContext(), FILE_NAME.get(0), istream, false);
-                                    break;
+                                    mTcpClient.stopClient();
+                                    return;
                                 case '3':
+                                    // ping test
                                     writeFIleToStorage(getApplicationContext(), "results" + count + ".txt", istream, true);
                                     count++;
-                                    break;
+                                    mTcpClient.stopClient();
+                                    return;
                                 case '4':
+                                    // file not found
                                     showAlerter("Response: ", "file not found");
-                                    break;
+                                    mTcpClient.stopClient();
+                                    return;
                                 default:
+                                    // err
                                     showAlerter("Message Received Error", "Code = " + str);
-                                    break;
+                                    mTcpClient.stopClient();
+                                    return;
                             }
                         }
                     } catch (IOException e) {
