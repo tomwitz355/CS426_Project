@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     // MAIN CONTROL VARIABLES
     private ArrayList<Item> ITEMLIST; // may want to prevent duplicates at some point by checking this list
     private int last_clicked_position = -1; // index of item currently clicked
-    private List<String> FILE_NAME; //@TODO TO BE USED w/ DOWNLOADING TEXT FILE
+    private List<String> FILE_NAME = null; //@TODO TO BE USED w/ DOWNLOADING TEXT FILE
     private Item CURRENT_ITEM;
     private static int count = 0;
     // MAIN UI
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             }
         });
         FILE_NAME = new ArrayList<>();
-        FILE_NAME.add("file0.txt");
+        FILE_NAME.add("null.txt");
     }
     /* BUILD LIST AND VIEW */
     public void buildRecyclerView() {
@@ -203,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     /* DIALOG BOX FOR GETTING FILE NAME FROM USER */
     public void openFileNameGrabberDialog() {
+        showAlerter("Response: ", "incoming file...");
         FileNameGrabberDialog dialog = new FileNameGrabberDialog();
         dialog.show(getSupportFragmentManager(), "dialog_box_file");
     }
@@ -450,7 +451,6 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     return;
                                 case '2':
                                     // file received
-                                    showAlerter("Response: ", "file received");
                                     openFileNameGrabberDialog();
                                     writeFIleToStorage(getApplicationContext(), FILE_NAME.get(0), istream, false);
                                     mTcpClient.stopClient();
