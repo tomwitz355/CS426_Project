@@ -448,16 +448,17 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                         } else {
                             // @here
                             String str = new String(b);
-                            switch (str) {
-                                case "0":
+                            char c = str.charAt(0);
+                            switch (c) {
+                                case '0':
                                     // invalid command
                                     showAlerter("Response: ", "invalid command");
                                     mTcpClient.stopClient(); // TODO remove this
                                     return;
-                                case "1":
+                                case '1':
                                     showAlerter("Response: ", "command successfully executed");
                                     break;
-                                case "2":
+                                case '2':
                                     // file received
                                     openFileNameGrabberDialog();
                                     writeFIleToStorage(getApplicationContext(), FILE_NAME.get(0), istream);
