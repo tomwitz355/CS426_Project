@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.Menu;
@@ -219,17 +220,14 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         final String f = filename;
         final InputStream is = istream;
         System.out.println("got here 6");
-        Thread t = new Thread(new Runnable() {
+        new Handler().post(new Runnable() {
             @Override
             public void run() {
                 writeFIleToStorage(f, is);
                 System.out.println("got here 10");
                 fileDone = true;
-                showAlerter("DEBUG", "File written successfully");
-
             }
         });
-        t.start();
 
 
     }
@@ -420,7 +418,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             System.out.println("IO Exception");
 
         }
-        
+        System.out.println("got here 9.5");
         showAlerter("File Received", "location: " + Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename);
 
     }
@@ -485,6 +483,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                         }
                                     }
                                     System.out.println("got here 11");
+                                    showAlerter("DEBUG", "File written successfully");
                                     mTcpClient.stopClient();
                                     fileDone = false;
                                     System.out.println("got here 12");
