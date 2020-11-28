@@ -219,8 +219,16 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     public void getFileName(String filename, InputStream istream) {
         final String f = filename;
         final InputStream is = istream;
-        System.out.println("got here 6");
-        new Handler().post(new Runnable() {
+        int bts = -1;
+        try {
+            bts = istream.available();
+        } catch (IOException e) {
+            System.out.println("io except");
+
+        }
+        System.out.println("got here 6, istream bytes = " + bts);
+
+        Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 writeFIleToStorage(f, is);
@@ -228,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 fileDone = true;
             }
         });
+        t.start();
 
 
     }
@@ -418,8 +427,8 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             System.out.println("IO Exception");
 
         }
-        System.out.println("got here 9.5");
-        showAlerter("File Received", "location: " + Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename);
+
+        //showAlerter("File Received", "location: " + Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename);
 
     }
 
@@ -471,9 +480,23 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     // file received
                                     showAlerter("Response: ", "case 2");
                                     System.out.println("got here 1");
+                                    int bts = -1;
+                                    try {
+                                        bts = istream.available();
+                                    } catch (IOException e) {
+                                        System.out.println("io except");
 
+                                    }
+                                    System.out.println("got here 1.5, bytes = " + bts);
                                     openFileNameGrabberDialog(istream);
-                                    System.out.println("got here 5");
+                                    int bts2 = -1;
+                                    try {
+                                        bts2 = istream.available();
+                                    } catch (IOException e) {
+                                        System.out.println("io except");
+
+                                    }
+                                    System.out.println("got here 5, bytes = " + bts2);
                                     while (!fileDone) {
                                         //wait
                                         try {
