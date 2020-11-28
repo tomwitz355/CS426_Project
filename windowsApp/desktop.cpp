@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+#include "utility.h"
 
 using namespace std;
 
@@ -112,6 +113,8 @@ int __cdecl main(void){
             bool sent = false;
             while(ss>>token){
                 if(token == "file"){
+                    char flag[] = "2";
+                    iSendResult = send( ClientSocket, flag , 1, 0 );
                     filesystem::path p {"example.txt"};
                     int length = filesystem::file_size(p);
                     buffer = new char [length];
@@ -126,6 +129,11 @@ int __cdecl main(void){
                         return 1;
                     }
                     delete buffer;
+                }
+                else if(token == "ping"){
+                    cout << GetStdoutFromCommand("python ping.py") << endl;
+                    char flag[] = "1";
+                    iSendResult = send( ClientSocket, flag , 1, 0 );
                 }
             }
             if(!sent){
@@ -156,70 +164,8 @@ int __cdecl main(void){
 
 
     // No longer need server socket
-    // closesocket(ListenSocket);
 
     // Receive until the peer shuts down the connection
-/*
-    do {
-        char recvbuf[DEFAULT_BUFLEN] = {0};
-        iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
-        if (iResult > 0) {
-            // printf("Bytes received: %d\n", iResult);
-            // printf("%s\n",recvbuf);
-
-        // Echo the buffer back to the sender
-            string temp = string(recvbuf);
-            temp.pop_back();
-            std::istringstream ss(temp);
-
-            std::string token;
-            ifstream input("example.txt", ios::in|ios::binary);
-            char *buffer;
-            int length = 0;
-            bool sent = false;
-            while(ss>>token){
-                if(token == "file"){
-                    filesystem::path p {"example.txt"};
-                    int length = filesystem::file_size(p);
-                    buffer = new char [length];
-                    input.read (buffer,length);
-                    iSendResult = send( ClientSocket, buffer , length, 0 );
-                    sent = true;
-                    printf("Bytes sent: %d\n", length);
-                    if (iSendResult == SOCKET_ERROR) {
-                        printf("send failed with error: %d\n", WSAGetLastError());
-                        closesocket(ClientSocket);
-                        WSACleanup();
-                        return 1;
-                    }
-                }
-            }
-            if(!sent){
-                cout << "made it here" << endl;
-                char empty[] = "0";
-                iSendResult = send( ClientSocket, empty , 1, 0 );
-                if (iSendResult == SOCKET_ERROR) {
-                    printf("send failed with error: %d\n", WSAGetLastError());
-                    closesocket(ClientSocket);
-                    WSACleanup();
-                    return 1;
-                }
-            }
-            input.close();
-            delete buffer;
-
-        }
-        else if (iResult == 0)
-            printf("Connection closing...\n");
-        else  {
-            printf("recv failed with error: %d\n", WSAGetLastError());
-            closesocket(ClientSocket);
-            WSACleanup();
-            return 1;
-        }
-
-    } while (iResult > 0);
-*/
     // shutdown the connection since we're done
     iResult = shutdown(ClientSocket, SD_SEND);
     if (iResult == SOCKET_ERROR) {
