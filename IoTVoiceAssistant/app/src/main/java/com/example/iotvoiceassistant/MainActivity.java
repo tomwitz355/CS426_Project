@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     private int last_clicked_position = -1; // index of item currently clicked
     private List<String> FILE_NAME; //@TODO TO BE USED w/ DOWNLOADING TEXT FILE
     private Item CURRENT_ITEM;
-    private int count = 0;
+    private static int count = 0;
     // MAIN UI
     private RecyclerView mRecyclerView;
     private Adapter mAdapter;
@@ -386,8 +386,8 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         if (!theDir.exists()) {
             theDir.mkdirs();
         }
-        File newfile = new File(theDir, filename);
-        try (OutputStream fos = new FileOutputStream(newfile)) {
+        File NewFile = new File(theDir, filename);
+        try (OutputStream fos = new FileOutputStream(NewFile)) {
 
 
             BufferedOutputStream bos = new BufferedOutputStream(fos);
@@ -410,10 +410,12 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
         }
 
-        showAlerter("File Received", "location: " + Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename);
         if (share) {
-            shareFile(newfile);
+            shareFile(NewFile);
         }
+
+        showAlerter("File Received", "location: " + Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename);
+
         mTcpClient.stopClient();
 
 
