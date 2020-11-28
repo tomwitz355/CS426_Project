@@ -427,7 +427,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 //here the messageReceived method is implemented
                 public void messageReceived(InputStream istream) {
                     //this method calls the onProgressUpdate
-//                    publishProgress(message);
+                    //publishProgress(message);
                     byte[] b = new byte[1];
                     try {
                         int bytes_read = istream.read(b);
@@ -457,6 +457,9 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     writeFIleToStorage(getApplicationContext(), "results" + count + ".txt", istream, true);
                                     count++;
                                     break;
+                                case '4':
+                                    showAlerter("Response: ", "file not found");
+                                    break;
                                 default:
                                     showAlerter("Message Received Error", "Code = " + str);
                                     break;
@@ -470,9 +473,11 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             mTcpClient.run();
             return null;
         }
+
+        /* unused, called when 'publishprogress' is called */
         @Override
         protected void onProgressUpdate(String... values) {
-            // @TODO CLOSE TCP CLIENT WHEN DONE, SET mTcpClient TO NULL TOO
+
             super.onProgressUpdate(values);
             if (values.length == 0) {
                 // empty response ? or values[0].length? @TODO
@@ -482,8 +487,8 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             //response received from server
             Log.d("test", "response " + values[0]);
             showAlerter("RESPONSE ", values[0]); // maybe add failure and success for title?
-            //TODO process server response here....
-            // EXAMPLE: WRITE RESPONSE STRING TO FILE 'test.txt'
+
+
             shareTextAsFile(values[0]);
         }
 
