@@ -1,6 +1,8 @@
 #ifndef UTILITY
 #define UTILITY
 
+#include <string>
+
 std::string GetStdoutFromCommand(std::string cmd) {
 
     std::string data;
