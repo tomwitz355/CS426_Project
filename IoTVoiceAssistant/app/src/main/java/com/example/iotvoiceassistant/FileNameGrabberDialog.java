@@ -13,11 +13,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import java.io.InputStream;
+
 public class FileNameGrabberDialog extends AppCompatDialogFragment {
     private EditText editTextFileName;
     private FileNameGrabberDialog.DialogListener listener;
     private View view;
     public static int count = 0;
+    public InputStream istream;
+
+    public FileNameGrabberDialog(InputStream is) {
+        super();
+        istream = is;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -31,14 +39,14 @@ public class FileNameGrabberDialog extends AppCompatDialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         Toast.makeText(view.getContext(), "Using default filename...", Toast.LENGTH_SHORT).show();
                         ++count;
-                        listener.getFileName("file" + count + ".txt");
+                        listener.getFileName("file" + count + ".txt", istream);
                     }
                 })
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String Filename = editTextFileName.getText().toString();
-                        listener.getFileName(Filename);
+                        listener.getFileName(Filename, istream);
                     }
                 });
         editTextFileName = view.findViewById(R.id.filename);
@@ -56,6 +64,6 @@ public class FileNameGrabberDialog extends AppCompatDialogFragment {
     }
 
     public interface DialogListener {
-        void getFileName(String filename);
+        void getFileName(String filename, InputStream is);
     }
 }

@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     private TcpClient mTcpClient;
     // MISC UI RELATED
     private FloatingActionButton addButton;
-    private InputStream gistream = null;
 
     /********************************** INIT *********************************/
 
@@ -201,24 +200,20 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     }
 
     /* DIALOG BOX FOR GETTING FILE NAME FROM USER */
-    public void openFileNameGrabberDialog() {
+    public void openFileNameGrabberDialog(InputStream istream) {
+
         showAlerter("DEBUG", "creating dialog box");
-        FileNameGrabberDialog dialog = new FileNameGrabberDialog();
-        showAlerter("DEBUG", "showing dialog box");
+        FileNameGrabberDialog dialog = new FileNameGrabberDialog(istream);
         dialog.show(getSupportFragmentManager(), "dialog_box_file");
     }
 
     /* NAME A FILE TO SAVE */
     @Override
-    public void getFileName(String filename) {
-        if (gistream == null) {
-            showAlerter("Error", "input stream null");
-        } else {
+    public void getFileName(String filename, InputStream istream) {
 
-            writeFIleToStorage(filename, gistream);
-            gistream = null;
-            mTcpClient.stopClient();
-        }
+
+        writeFIleToStorage(filename, istream);
+        mTcpClient.stopClient();
 
     }
 
@@ -436,10 +431,10 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 public void messageReceived(InputStream istream) {
                     //this method calls the onProgressUpdate
                     //publishProgress(message);
-                    gistream = istream;
+
                     byte[] b = new byte[1];
                     try {
-                        int bytes_read = gistream.read(b);
+                        int bytes_read = istream.read(b);
                         if (bytes_read != 1) {
                             // error
                             showAlerter("Error: ", "couldn't parse response");
@@ -460,13 +455,11 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                 case '2':
                                     // file received
                                     showAlerter("Response: ", "case 2");
-                                    openFileNameGrabberDialog();
-                                    showAlerter("DEBUG", "stopping client");
-
+                                    openFileNameGrabberDialog(istream);
                                     return;
                                 case '3':
                                     // ping test
-                                    writeFIleToStorage("results" + count + ".txt", gistream);
+                                    writeFIleToStorage("results" + count + ".txt", istream);
                                     count++;
                                     mTcpClient.stopClient();
                                     return;
