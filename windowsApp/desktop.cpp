@@ -131,9 +131,11 @@ int __cdecl main(void){
                     delete buffer;
                 }
                 else if(token == "ping"){
-                    cout << GetStdoutFromCommand("python commands/ping.py") << endl;
-                    char flag[] = "1";
+                    string result = GetStdoutFromCommand("python commands/ping.py");
+                    char flag[] = "3";
+                    sent = true;
                     iSendResult = send( ClientSocket, flag , 1, 0 );
+                    iSendResult = send( ClientSocket, result.c_str() , result.size(), 0 );
                 }
             }
             if(!sent){
