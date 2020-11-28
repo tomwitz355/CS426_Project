@@ -41,7 +41,7 @@ public class FileNameGrabberDialog extends AppCompatDialogFragment {
                         listener.getFileName(Filename);
                     }
                 });
-        editTextFileName = view.findViewById(R.id.edit_IP);
+        editTextFileName = view.findViewById(R.id.filename);
         return builder.create();
     }
 

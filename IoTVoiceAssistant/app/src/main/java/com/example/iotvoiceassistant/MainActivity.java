@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     private int last_clicked_position = -1; // index of item currently clicked
     private List<String> FILE_NAME; //@TODO TO BE USED w/ DOWNLOADING TEXT FILE
     private Item CURRENT_ITEM;
+    private int count = 0;
     // MAIN UI
     private RecyclerView mRecyclerView;
     private Adapter mAdapter;
@@ -380,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     }
 
-    public void writeFIleToStorage(Context context, String filename, InputStream is) {
+    public void writeFIleToStorage(Context context, String filename, InputStream is, boolean share) {
         File theDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "received_files");
         if (!theDir.exists()) {
             theDir.mkdirs();
@@ -410,7 +411,9 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         }
 
         showAlerter("File Received", "location: " + Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename);
-//        shareFile(newfile);
+        if (share) {
+            shareFile(newfile);
+        }
         mTcpClient.stopClient();
 
 
@@ -460,8 +463,13 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     break;
                                 case '2':
                                     // file received
+                                    showAlerter("Response: ", "file received");
                                     openFileNameGrabberDialog();
-                                    writeFIleToStorage(getApplicationContext(), FILE_NAME.get(0), istream);
+                                    writeFIleToStorage(getApplicationContext(), FILE_NAME.get(0), istream, false);
+                                    break;
+                                case '3':
+                                    writeFIleToStorage(getApplicationContext(), "results" + count + ".txt", istream, true);
+                                    count++;
                                     break;
                                 default:
                                     showAlerter("Message Received Error", "Code = " + str);
@@ -469,7 +477,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                             }
                         }
                     } catch (IOException e) {
-                        showAlerter("Errorr", "IO Exception");
+                        showAlerter("Error", "IO Exception");
                     }
                 }
             }, CURRENT_ITEM.getIP(), Integer.parseInt(CURRENT_ITEM.getPort()));
