@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     // MISC UI RELATED
     private FloatingActionButton addButton;
     private InputStream gistream = null;
+
     /********************************** INIT *********************************/
 
     @Override
@@ -201,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     /* DIALOG BOX FOR GETTING FILE NAME FROM USER */
     public void openFileNameGrabberDialog() {
-        Toast.makeText(MainActivity.this, "Incoming file...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Incoming file...", Toast.LENGTH_SHORT).show();
         FileNameGrabberDialog dialog = new FileNameGrabberDialog();
         dialog.show(getSupportFragmentManager(), "dialog_box_file");
     }
@@ -212,7 +213,9 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         if (gistream == null) {
             showAlerter("Error", "input stream null");
         } else {
-            writeFIleToStorage(getApplicationContext(), filename, gistream, false);
+            Toast.makeText(getApplicationContext(), "Name the file...", Toast.LENGTH_SHORT).show();
+            writeFIleToStorage(filename, gistream);
+
             gistream = null;
         }
 
@@ -259,10 +262,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         } else {
             Toast.makeText(getApplicationContext(), "error trying to edit item, index is undefined", Toast.LENGTH_SHORT).show();
         }
-
     }
-
-
 
     /* METHOD CALLED TO DISPLAY THE MENU WHEN AN ITEM IS CLICKED */
     public void ShowItemPopup() {
@@ -376,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     }
 
 
-    public void writeFIleToStorage(Context context, String filename, InputStream is, boolean share) {
+    public void writeFIleToStorage(String filename, InputStream is) {
         File theDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "received_files");
         if (!theDir.exists()) {
             theDir.mkdirs();
@@ -458,12 +458,13 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     return;
                                 case '2':
                                     // file received
+                                    showAlerter("Response: ", "case 2");
                                     openFileNameGrabberDialog();
                                     mTcpClient.stopClient();
                                     return;
                                 case '3':
                                     // ping test
-                                    writeFIleToStorage(getApplicationContext(), "results" + count + ".txt", gistream, true);
+                                    writeFIleToStorage("results" + count + ".txt", gistream);
                                     count++;
                                     mTcpClient.stopClient();
                                     return;
