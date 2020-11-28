@@ -107,31 +107,55 @@ int __cdecl main(void){
             std::istringstream ss(temp);
 
             std::string token;
-            ifstream input("example.txt", ios::in|ios::binary);
             char *buffer;
             int length = 0;
             bool sent = false;
             while(ss>>token){
                 if(token == "file"){
-                    char flag[] = "2";
-                    iSendResult = send( ClientSocket, flag , 1, 0 );
-                    filesystem::path p {"example.txt"};
-                    int length = filesystem::file_size(p);
-                    buffer = new char [length];
-                    input.read (buffer,length);
-                    iSendResult = send( ClientSocket, buffer , length, 0 );
-                    sent = true;
-                    printf("Bytes sent: %d\n", length);
-                    if (iSendResult == SOCKET_ERROR) {
-                        printf("send failed with error: %d\n", WSAGetLastError());
-                        closesocket(ClientSocket);
-                        WSACleanup();
-                        return 1;
+                    ss>>token;
+                    if(token != "") {
+                        ifstream input;
+                        int length;
+                        bool found = false;
+                        for(auto &p : filesystem::directory_iterator("./")){
+                            if(p.path().filename().string().size() >= token.size()){
+                              if(p.path().filename().string().substr(0,token.size()) == token){
+                                length = filesystem::file_size(p);
+                                input = ifstream(p.path().filename().string(), ios::in|ios::binary);
+                                found = true;
+                              }
+                            }
+                        }
+                        if(!found){
+                            char flag[] = "4";
+                            iSendResult = send( ClientSocket, flag , 1, 0 );
+                            sent = true;
+                        }
+                        char flag[] = "2";
+                        iSendResult = send( ClientSocket, flag , 1, 0 );
+                        buffer = new char [length];
+                        input.read (buffer,length);
+                        iSendResult = send( ClientSocket, buffer , length, 0 );
+                        sent = true;
+                        printf("Bytes sent: %d\n", length);
+                        if (iSendResult == SOCKET_ERROR) {
+                            printf("send failed with error: %d\n", WSAGetLastError());
+                            closesocket(ClientSocket);
+                            WSACleanup();
+                            return 1;
+                        }
+                        delete buffer;
+                        input.close();
                     }
-                    delete buffer;
+                    else{
+                        char flag[] = "4";
+                        iSendResult = send( ClientSocket, flag , 1, 0 );
+                        sent = true;
+                    }
                 }
                 else if(token == "ping"){
                     string result = GetStdoutFromCommand("python commands/ping.py");
+                    cout << result << endl;
                     char flag[] = "3";
                     sent = true;
                     iSendResult = send( ClientSocket, flag , 1, 0 );
@@ -139,8 +163,8 @@ int __cdecl main(void){
                 }
             }
             if(!sent){
-                char empty[] = "0";
-                iSendResult = send( ClientSocket, empty , 1, 0 );
+                char flag[] = "0";
+                iSendResult = send( ClientSocket, flag , 1, 0 );
                 if (iSendResult == SOCKET_ERROR) {
                     printf("send failed with error: %d\n", WSAGetLastError());
                     closesocket(ClientSocket);
@@ -148,7 +172,6 @@ int __cdecl main(void){
                     return 1;
                 }
             }
-            input.close();
             closesocket(ClientSocket);
 
 
