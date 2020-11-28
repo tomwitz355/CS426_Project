@@ -204,19 +204,23 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     /* DIALOG BOX FOR GETTING FILE NAME FROM USER */
     public void openFileNameGrabberDialog(InputStream istream) {
-        synchronized (mTcpClient) {
-            showAlerter("DEBUG", "creating dialog box");
-            FileNameGrabberDialog dialog = new FileNameGrabberDialog(istream);
-            dialog.show(getSupportFragmentManager(), "dialog_box_file");
-        }
+
+        Log.d("test", "got here 2");
+        FileNameGrabberDialog dialog = new FileNameGrabberDialog(istream);
+        Log.d("test", "got here 3");
+        dialog.show(getSupportFragmentManager(), "dialog_box_file");
+        Log.d("test", "got here 4");
+
     }
 
     /* NAME A FILE TO SAVE */
     @Override
     public void getFileName(String filename, InputStream istream) {
+        Log.d("test", "got here 6");
         writeFIleToStorage(filename, istream);
+        Log.d("test", "got here 10");
         fileDone = true;
-        showAlerter("DEBUG", "File written succeesfully");
+        showAlerter("DEBUG", "File written successfully");
 
     }
 
@@ -380,10 +384,11 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         if (!theDir.exists()) {
             theDir.mkdirs();
         }
+        Log.d("test", "got here 7");
         File NewFile = new File(theDir, filename);
         try (OutputStream fos = new FileOutputStream(NewFile)) {
 
-
+            Log.d("test", "got here 8");
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             byte[] aByte = new byte[1024];
 
@@ -392,6 +397,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 System.out.println(bytesRead + " bytes read");
                 bos.write(aByte);
             }
+            Log.d("test", "got here 9");
             System.out.println("done reading bytes");
             bos.flush();
             bos.close();
@@ -405,9 +411,6 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         }
         
         showAlerter("File Received", "location: " + Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename);
-
-        mTcpClient.stopClient();
-
 
     }
 
@@ -458,19 +461,21 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                 case '2':
                                     // file received
                                     showAlerter("Response: ", "case 2");
+                                    Log.d("test", "got here 1");
                                     openFileNameGrabberDialog(istream);
                                     fileDone = false;
-                                    synchronized (mTcpClient) {
-                                        while (!fileDone) {
-                                            //wait
-                                            try {
-                                                sleep(1000);
-                                            } catch (InterruptedException e) {
-                                                showAlerter("Error", "interrupted");
-                                            }
+                                    Log.d("test", "got here 5");
+                                    while (!fileDone) {
+                                        //wait
+                                        try {
+                                            sleep(1000);
+                                        } catch (InterruptedException e) {
+                                            showAlerter("Error", "interrupted");
                                         }
                                     }
+                                    Log.d("test", "got here 11");
                                     mTcpClient.stopClient();
+                                    Log.d("test", "got here 12");
                                     return;
                                 case '3':
                                     // ping test
