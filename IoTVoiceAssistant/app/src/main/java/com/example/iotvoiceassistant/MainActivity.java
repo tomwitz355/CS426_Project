@@ -1,6 +1,7 @@
 package com.example.iotvoiceassistant;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -52,6 +53,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static java.lang.Thread.sleep;
+
 public class MainActivity extends AppCompatActivity implements NewItemDialog.DialogListener, EditItemDialog.DialogListener, FileNameGrabberDialog.DialogListener {
 
     private static final int SPEECH_REQUEST_CODE = 0;
@@ -69,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     private TcpClient mTcpClient;
     // MISC UI RELATED
     private FloatingActionButton addButton;
-
+    private boolean fileDone = true;
     /********************************** INIT *********************************/
 
     @Override
@@ -201,19 +204,19 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     /* DIALOG BOX FOR GETTING FILE NAME FROM USER */
     public void openFileNameGrabberDialog(InputStream istream) {
-
-        showAlerter("DEBUG", "creating dialog box");
-        FileNameGrabberDialog dialog = new FileNameGrabberDialog(istream);
-        dialog.show(getSupportFragmentManager(), "dialog_box_file");
+        synchronized (mTcpClient) {
+            showAlerter("DEBUG", "creating dialog box");
+            FileNameGrabberDialog dialog = new FileNameGrabberDialog(istream);
+            dialog.show(getSupportFragmentManager(), "dialog_box_file");
+        }
     }
 
     /* NAME A FILE TO SAVE */
     @Override
     public void getFileName(String filename, InputStream istream) {
-
-
         writeFIleToStorage(filename, istream);
-        mTcpClient.stopClient();
+        fileDone = true;
+        showAlerter("DEBUG", "File written succeesfully");
 
     }
 
@@ -456,6 +459,18 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     // file received
                                     showAlerter("Response: ", "case 2");
                                     openFileNameGrabberDialog(istream);
+                                    fileDone = false;
+                                    synchronized (mTcpClient) {
+                                        while (!fileDone) {
+                                            //wait
+                                            try {
+                                                sleep(1000);
+                                            } catch (InterruptedException e) {
+                                                showAlerter("Error", "interrupted");
+                                            }
+                                        }
+                                    }
+                                    mTcpClient.stopClient();
                                     return;
                                 case '3':
                                     // ping test
