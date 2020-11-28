@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     // MAIN CONTROL VARIABLES
     private ArrayList<Item> ITEMLIST; // may want to prevent duplicates at some point by checking this list
     private int last_clicked_position = -1; // index of item currently clicked
-    private List<String> FILE_NAME = null; //@TODO TO BE USED w/ DOWNLOADING TEXT FILE
     private Item CURRENT_ITEM;
     private static int count = 0;
     // MAIN UI
@@ -70,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     private TcpClient mTcpClient;
     // MISC UI RELATED
     private FloatingActionButton addButton;
-
+    private InputStream gistream = null;
     /********************************** INIT *********************************/
 
     @Override
@@ -115,8 +114,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 insertItem();
             }
         });
-        FILE_NAME = new ArrayList<>();
-        FILE_NAME.add("null.txt");
+
     }
     /* BUILD LIST AND VIEW */
     public void buildRecyclerView() {
@@ -203,9 +201,21 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     /* DIALOG BOX FOR GETTING FILE NAME FROM USER */
     public void openFileNameGrabberDialog() {
-        showAlerter("Response: ", "incoming file...");
+        Toast.makeText(MainActivity.this, "Incoming file...", Toast.LENGTH_SHORT).show();
         FileNameGrabberDialog dialog = new FileNameGrabberDialog();
         dialog.show(getSupportFragmentManager(), "dialog_box_file");
+    }
+
+    /* NAME A FILE TO SAVE */
+    @Override
+    public void getFileName(String filename) {
+        if (gistream == null) {
+            showAlerter("Error", "input stream null");
+        } else {
+            writeFIleToStorage(getApplicationContext(), filename, gistream, false);
+            gistream = null;
+        }
+
     }
 
     /* METHOD CALLED ON '+' BUTTON PRESS TO ADD A NEW ITEM*/
@@ -252,11 +262,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     }
 
-    /* NAME A FILE TO SAVE */
-    @Override
-    public void getFileName(String filename) {
-        FILE_NAME.set(0, filename);
-    }
+
 
     /* METHOD CALLED TO DISPLAY THE MENU WHEN AN ITEM IS CLICKED */
     public void ShowItemPopup() {
@@ -429,9 +435,10 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 public void messageReceived(InputStream istream) {
                     //this method calls the onProgressUpdate
                     //publishProgress(message);
+                    gistream = istream;
                     byte[] b = new byte[1];
                     try {
-                        int bytes_read = istream.read(b);
+                        int bytes_read = gistream.read(b);
                         if (bytes_read != 1) {
                             // error
                             showAlerter("Error: ", "couldn't parse response");
@@ -452,12 +459,11 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                 case '2':
                                     // file received
                                     openFileNameGrabberDialog();
-                                    writeFIleToStorage(getApplicationContext(), FILE_NAME.get(0), istream, false);
                                     mTcpClient.stopClient();
                                     return;
                                 case '3':
                                     // ping test
-                                    writeFIleToStorage(getApplicationContext(), "results" + count + ".txt", istream, true);
+                                    writeFIleToStorage(getApplicationContext(), "results" + count + ".txt", gistream, true);
                                     count++;
                                     mTcpClient.stopClient();
                                     return;
