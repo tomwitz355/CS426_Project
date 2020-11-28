@@ -216,11 +216,21 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     /* NAME A FILE TO SAVE */
     @Override
     public void getFileName(String filename, InputStream istream) {
+        final String f = filename;
+        final InputStream is = istream;
         System.out.println("got here 6");
-        writeFIleToStorage(filename, istream);
-        System.out.println("got here 10");
-        fileDone = true;
-        showAlerter("DEBUG", "File written successfully");
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                writeFIleToStorage(f, is);
+                System.out.println("got here 10");
+                fileDone = true;
+                showAlerter("DEBUG", "File written successfully");
+
+            }
+        });
+        t.start();
+
 
     }
 
@@ -393,6 +403,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             byte[] aByte = new byte[1024];
 
             int bytesRead;
+            System.out.println("got here 8.5");
             while ((bytesRead = is.read(aByte)) != -1) {
                 System.out.println(bytesRead + " bytes read");
                 bos.write(aByte);
