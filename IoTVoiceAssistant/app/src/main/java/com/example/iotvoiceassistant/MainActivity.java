@@ -52,25 +52,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements NewItemDialog.DialogListener, EditItemDialog.DialogListener {
+public class MainActivity extends AppCompatActivity implements NewItemDialog.DialogListener, EditItemDialog.DialogListener, FileNameGrabberDialog.DialogListener {
 
+    private static final int SPEECH_REQUEST_CODE = 0;
+    public Dialog itemDialogBox;
+    public Animation rotateAnim;
     // MAIN CONTROL VARIABLES
     private ArrayList<Item> ITEMLIST; // may want to prevent duplicates at some point by checking this list
-    private static final int SPEECH_REQUEST_CODE = 0;
     private int last_clicked_position = -1; // index of item currently clicked
-    private String FILE_NAME; // @TODO TO BE USED w/ DOWNLOADING TEXT FILE
+    private List<String> FILE_NAME; //@TODO TO BE USED w/ DOWNLOADING TEXT FILE
     private Item CURRENT_ITEM;
-
     // MAIN UI
     private RecyclerView mRecyclerView;
     private Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private TcpClient mTcpClient;
-
     // MISC UI RELATED
     private FloatingActionButton addButton;
-    public Dialog itemDialogBox;
-    public Animation rotateAnim;
 
     /********************************** INIT *********************************/
 
@@ -116,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 insertItem();
             }
         });
+        FILE_NAME = new ArrayList<>();
+        FILE_NAME.add("file0.txt");
     }
     /* BUILD LIST AND VIEW */
     public void buildRecyclerView() {
@@ -192,17 +192,26 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         NewItemDialog dialog = new NewItemDialog();
         dialog.show(getSupportFragmentManager(), "dialog_box_new");
     }
+
     /* DIALOG BOX FOR EDITING OLD ITEM */
     public void openEditItemDialog() {
 
         EditItemDialog dialog = new EditItemDialog();
         dialog.show(getSupportFragmentManager(), "dialog_box_edit");
     }
+
+    /* DIALOG BOX FOR GETTING FILE NAME FROM USER */
+    public void openFileNameGrabberDialog() {
+        FileNameGrabberDialog dialog = new FileNameGrabberDialog();
+        dialog.show(getSupportFragmentManager(), "dialog_box_file_name");
+    }
+
     /* METHOD CALLED ON '+' BUTTON PRESS TO ADD A NEW ITEM*/
     public void insertItem() {
         // open the prompt to give the new item its IP and PORT values
         openNewItemDialog();
     }
+
     /* REMOVE THE ITEM AT POSITION position AND UPDATE THE VIEW*/
     public void removeItem(int position) {
         ITEMLIST.remove(position);
@@ -229,22 +238,27 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     }
     /* EDIT AN OLD ITEM */
     @Override
-    public void editItemWithDialogValues(String IP, String Port){
+    public void editItemWithDialogValues(String IP, String Port) {
 
-        Toast.makeText(getApplicationContext(), "Changing item with index "+last_clicked_position, Toast.LENGTH_SHORT).show();
-        if (last_clicked_position != -1){
+        Toast.makeText(getApplicationContext(), "Changing item with index " + last_clicked_position, Toast.LENGTH_SHORT).show();
+        if (last_clicked_position != -1) {
             changeItemText(last_clicked_position, IP, Port);
             changeItemData(last_clicked_position, IP, Port);
-        }
-        else{
-            Toast.makeText(getApplicationContext(), "error trying to edit item, index is undefined" , Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "error trying to edit item, index is undefined", Toast.LENGTH_SHORT).show();
         }
 
     }
 
+    /* NAME A FILE TO SAVE */
+    @Override
+    public void getFileName(String filename) {
+        FILE_NAME.set(0, filename);
+    }
+
     /* METHOD CALLED TO DISPLAY THE MENU WHEN AN ITEM IS CLICKED */
     public void ShowItemPopup() {
-        // @TODO add connect functionality, add text fields, clean up later
+
         itemDialogBox = new Dialog(this);
         TextView txtclose;
         ImageButton Edit_Fields;
@@ -342,6 +356,66 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    /* METHOD CALLED TO SHARE A STRING AS A TEXT FILE*/
+    private void shareTextAsFile(String string) {
+
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, string);
+        startActivity(Intent.createChooser(shareIntent, "Share response text file..."));
+    }
+
+    private void shareFile(File file) {
+        Log.d("FILE WRITING", "SHARING...");
+        Uri contentUri = FileProvider.getUriForFile(this, "com.example.iotvoiceassistant", file);
+        Intent intent = new Intent();
+        Log.d("FILE WRITING", "INTENT MADE");
+        intent.setAction(Intent.ACTION_SEND).putExtra(Intent.EXTRA_STREAM, contentUri)
+                .setType("application/txt");
+        Log.d("FILE WRITING", "STARTING ACTIVITY");
+        startActivity(Intent.createChooser(intent, "Share received text file..."));
+
+
+    }
+
+    public void writeFIleToStorage(Context context, String filename, InputStream is) {
+        File theDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "received_files");
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+        File newfile = new File(theDir, filename);
+        try (OutputStream fos = new FileOutputStream(newfile)) {
+
+
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            byte[] aByte = new byte[1024];
+
+            int bytesRead;
+            while ((bytesRead = is.read(aByte)) != -1) {
+                System.out.println(bytesRead + " bytes read");
+                bos.write(aByte);
+            }
+            System.out.println("done reading bytes");
+            bos.flush();
+            bos.close();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("F N F");
+
+        } catch (IOException e) {
+            System.out.println("IO Exception");
+
+        }
+
+        showAlerter("File Received", "location: " + Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename);
+//        shareFile(newfile);
+        mTcpClient.stopClient();
+
+
+    }
+
     public class ConnectTask extends AsyncTask<String, String, TcpClient> {
         //
         @Override
@@ -349,7 +423,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             // ONLY CREATE THIS IF AN ITEM HAS BEEN CLICKED AND VALUES ARE STORED PROPERLY
             // MIGHT WANT THIS TO OCCUR IN NEW ACTIVITY
             // IF THIS RUNS IN BACKGROUND, WHAT DO WE DISPLAY?
-            if(CURRENT_ITEM == null){
+            if (CURRENT_ITEM == null) {
                 showAlerter("Error", "No item selected");
                 return null;
             }
@@ -365,20 +439,34 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 public void messageReceived(InputStream istream) {
                     //this method calls the onProgressUpdate
 //                    publishProgress(message);
-                    showAlerter("message", "received");
+                    byte[] b = new byte[1];
                     try {
-                        System.out.println(istream.available());
-                        if(istream.available()==1){
-                            showAlerter("Response: ", "invalid command");
-                            mTcpClient.stopClient();
-                            return;
+                        int bytes_read = istream.read(b);
+                        if (bytes_read != 1) {
+                            // error
+                            showAlerter("Error: ", "couldn't parse response");
+                        } else {
+                            // @here
+                            String str = new String(b);
+                            switch (str) {
+                                case "0":
+                                    // invalid command
+                                    showAlerter("Response: ", "invalid command");
+                                    mTcpClient.stopClient(); // TODO remove this
+                                    return;
+                                case "1":
+                                    showAlerter("Response: ", "command successfully executed");
+                                case "2":
+                                    // file received
+                                    openFileNameGrabberDialog();
+                                    writeFIleToStorage(getApplicationContext(), FILE_NAME.get(0), istream);
+                                default:
+                                    showAlerter("Message Received Error", "Code = " + str);
+                            }
                         }
-                    }catch(IOException e) {
-                        System.out.println("Error");
+                    } catch (IOException e) {
+                        showAlerter("Errorr", "IO Exception");
                     }
-                    writeFIleToStorage(getApplicationContext(), "test.txt", istream);
-
-
                 }
             }, CURRENT_ITEM.getIP(), Integer.parseInt(CURRENT_ITEM.getPort()));
             mTcpClient.run();
@@ -400,59 +488,6 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             // EXAMPLE: WRITE RESPONSE STRING TO FILE 'test.txt'
             shareTextAsFile(values[0]);
         }
-
-    }
-    /* METHOD CALLED TO SHARE A STRING AS A TEXT FILE*/
-    private void shareTextAsFile(String string) {
-
-        Intent shareIntent = new Intent();
-        shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, string);
-        startActivity(Intent.createChooser(shareIntent, "Share response text file..."));
-    }
-    private void shareFile(File file){
-        Log.d("FILE WRITING", "SHARING...");
-        Uri contentUri = FileProvider.getUriForFile(this, "com.example.iotvoiceassistant", file);
-        Intent intent = new Intent();
-        Log.d("FILE WRITING", "INTENT MADE");
-        intent.setAction(Intent.ACTION_SEND).putExtra(Intent.EXTRA_STREAM, contentUri)
-                .setType("application/txt");
-        Log.d("FILE WRITING", "STARTING ACTIVITY");
-        startActivity(Intent.createChooser(intent, "Share received text file..."));
-
-
-    }
-    public void writeFIleToStorage(Context context, String filename, InputStream is){
-        File theDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "received_files");
-        if (!theDir.exists()){
-            theDir.mkdirs();
-        }
-        File newfile = new File(theDir, filename);
-        try(OutputStream fos = new FileOutputStream(newfile)){
-
-
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-            byte[] aByte = new byte[1024];
-            int bytesRead = is.read(aByte);
-            System.out.println(bytesRead + " bytes read");
-
-
-            bos.write(aByte);
-
-            bos.close();
-
-        } catch (FileNotFoundException e) {
-            System.out.println("F N F");
-        } catch (IOException e) {
-            System.out.println("IO Exception");
-        }
-        showAlerter("File Received", "location: "+Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+filename);
-
-//        shareFile(newfile);
-        mTcpClient.stopClient();
-
-
 
     }
 
