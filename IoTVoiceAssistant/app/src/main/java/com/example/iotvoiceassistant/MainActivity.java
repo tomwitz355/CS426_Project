@@ -456,12 +456,15 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     return;
                                 case "1":
                                     showAlerter("Response: ", "command successfully executed");
+                                    break;
                                 case "2":
                                     // file received
                                     openFileNameGrabberDialog();
                                     writeFIleToStorage(getApplicationContext(), FILE_NAME.get(0), istream);
+                                    break;
                                 default:
                                     showAlerter("Message Received Error", "Code = " + str);
+                                    break;
                             }
                         }
                     } catch (IOException e) {
