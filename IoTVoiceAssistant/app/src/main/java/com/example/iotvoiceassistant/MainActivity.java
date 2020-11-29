@@ -452,7 +452,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                 case '1':
                                     /* success message returned by ...
                                      - open
-                                     -
+                                     - new memo
                                      */
                                     showAlerter("Response: ", "command successfully executed");
                                     mTcpClient.stopClient();
@@ -488,13 +488,20 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     break;
                                 case '4':
                                     /* file not found returned by ...
-                                     - command failed
+                                     - file
                                      */
                                     showAlerter("Response: ", "file not found");
                                     mTcpClient.stopClient();
                                     break;
                                 case '5':
                                     showAlerter("Response: ", "command failed to execute");
+                                    mTcpClient.stopClient();
+                                    break;
+
+                                case '6':
+                                    // Memo received
+                                    showAlerter("Response: ", "Memo Received");
+                                    writeFIleToStorage("memo" + count + ".txt", istream);
                                     mTcpClient.stopClient();
                                     break;
                                 default:
