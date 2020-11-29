@@ -252,6 +252,86 @@ int __cdecl main(void){
                         iSendResult = send( ClientSocket, flag , 1, 0 );
                     }
                 }
+                else if(token == "run"){
+                    if(!ss.eof()){
+                        ss>>token;
+                        bool found = false;
+                        string command;
+                        for(auto &p : filesystem::directory_iterator("./commands")){
+                            if(p.path().filename().string().size() >= token.size()){
+                                string pathlower = p.path().filename().string().substr(0,token.size());
+                                transform(pathlower.begin(), pathlower.end(), pathlower.begin(), ::tolower);
+                                transform(token.begin(), token.end(), token.begin(), ::tolower);
+                                if(pathlower == token){
+                                    command = p.path().filename().string();
+                                    found = true;
+                                }
+                            }
+                        }
+                        if(!found){
+                            char flag[] = "4";
+                            iSendResult = send( ClientSocket, flag , 1, 0 );
+                            sent = true;
+                        }
+                        else{
+                            auto index = command.find('.');
+                            string extension = command.substr(index,command.size());
+                            string path = "./commands/";
+                            path += command;
+                            if(extension == ".exe"){
+                                int result = system(path.c_str());
+                                if(result == -1){
+                                    char flag[] = "5";
+                                    sent = true;
+                                    iSendResult = send( ClientSocket, flag , 1, 0 );
+                                }
+                                else{
+                                    char flag[] = "1";
+                                    sent = true;
+                                    iSendResult = send( ClientSocket, flag , 1, 0 );
+                                }
+                            }
+                            else if(extension == ".jl"){
+                                string julia = "julia " + path;
+                                int result = system(julia.c_str());
+                                if(result == -1){
+                                    char flag[] = "5";
+                                    sent = true;
+                                    iSendResult = send( ClientSocket, flag , 1, 0 );
+                                }
+                                else{
+                                    char flag[] = "1";
+                                    sent = true;
+                                    iSendResult = send( ClientSocket, flag , 1, 0 );
+                                }
+                            }
+                            else if(extension == ".py"){
+                                string python = "python " + path;
+                                int result = system(python.c_str());
+                                if(result == -1){
+                                    char flag[] = "5";
+                                    sent = true;
+                                    iSendResult = send( ClientSocket, flag , 1, 0 );
+                                }
+                                else{
+                                    char flag[] = "1";
+                                    sent = true;
+                                    iSendResult = send( ClientSocket, flag , 1, 0 );
+                                }
+                            }
+                            else{
+                                char flag[] = "5";
+                                sent = true;
+                                iSendResult = send( ClientSocket, flag , 1, 0 );
+                            }
+                        }
+                    }
+                    else{
+                        char flag[] = "5";
+                        sent = true;
+                        iSendResult = send( ClientSocket, flag , 1, 0 );
+                    }
+                }
             }
             if(!sent){
                 char flag[] = "0";
