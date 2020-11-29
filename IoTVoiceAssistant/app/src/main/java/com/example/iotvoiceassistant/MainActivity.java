@@ -450,7 +450,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             // MIGHT WANT THIS TO OCCUR IN NEW ACTIVITY
             // IF THIS RUNS IN BACKGROUND, WHAT DO WE DISPLAY?
             if (CURRENT_ITEM == null) {
-                showAlerter("Error", "No item selected");
+               // showAlerter("Error", "No item selected");
                 return null;
             }
             try{Integer.parseInt(CURRENT_ITEM.getPort());}
@@ -541,7 +541,9 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     StringBuffer inputLine = new StringBuffer();
                                     String tmp;
                                     while ((tmp = dis.readLine()) != null) {
+                                        inputLine.append("•");
                                         inputLine.append(tmp);
+                                        inputLine.append('\n');
 
                                     }
                                     message = inputLine.toString();
