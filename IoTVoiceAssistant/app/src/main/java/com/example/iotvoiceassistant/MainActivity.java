@@ -450,11 +450,17 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     mTcpClient.stopClient();
                                     break;
                                 case '1':
+                                    /* success message returned by ...
+                                     - open
+                                     -
+                                     */
                                     showAlerter("Response: ", "command successfully executed");
                                     mTcpClient.stopClient();
                                     break;
                                 case '2':
-                                    // file received
+                                    /* specific file received returned by
+                                     - file
+                                    */
                                     showAlerter("Response: ", "file received");
                                     openFileNameGrabberDialog(istream);
 
@@ -471,20 +477,24 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     // tcp client closed when file written
                                     break;
                                 case '3':
-                                    // ping test
+                                    /* generic results file returned by ...
+                                     - ping
+                                     - clipboard
+                                    */
+                                    showAlerter("Response: ", "file received...");
                                     writeFIleToStorage("results" + count + ".txt", istream);
                                     count++;
                                     mTcpClient.stopClient();
                                     break;
                                 case '4':
-                                    // file not found
+                                    /* file not found returned by ...
+                                     - command failed
+                                     */
                                     showAlerter("Response: ", "file not found");
                                     mTcpClient.stopClient();
                                     break;
                                 case '5':
-                                    // get clipboard
-                                    showAlerter("Response: ", "clipboard received (in file)");
-                                    writeFIleToStorage("results" + count + ".txt", istream);
+                                    showAlerter("Response: ", "command failed to execute");
                                     mTcpClient.stopClient();
                                     break;
                                 default:
