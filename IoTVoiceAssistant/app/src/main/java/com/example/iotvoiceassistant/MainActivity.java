@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     private FloatingActionButton addButton;
     private boolean fileDone = false;
     private String memo_string = "";
+    private TextView memo_textView;
     /********************************** INIT *********************************/
 
     @Override
@@ -119,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             }
         });
         memoDialogBox = new Dialog(this);
+        memo_textView = memoDialogBox.findViewById(R.id.memo_text);
         memoDialogBox.dismiss();
 
     }
@@ -324,16 +326,14 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         memoDialogBox.show();
         Toast.makeText(this, "Show Memo", Toast.LENGTH_SHORT).show();
 
-        TextView txtclose;
-        TextView memo_text;
+        TextView txtclose2;
         memoDialogBox.setContentView(R.layout.memo);
-        txtclose = memoDialogBox.findViewById(R.id.txtclose2);
+        txtclose2 = memoDialogBox.findViewById(R.id.txtclose2);
 
-        memo_text = memoDialogBox.findViewById(R.id.memo_text);
 
-        memo_string = memo_text.getText().toString();
+        memo_string = memo_textView.getText().toString();
 
-        txtclose.setOnClickListener(new View.OnClickListener() {
+        txtclose2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 memoDialogBox.dismiss();
@@ -539,7 +539,9 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     System.out.println("Got here 1");
 
                                     if (memoDialogBox != null) {
-                                        TextView t = memoDialogBox.findViewById(R.id.memo_text);
+                                        if (memo_textView == null) {
+                                            System.out.println("text view is null");
+                                        }
                                         System.out.println("Got here 2");
 
                                         DataInputStream dis = new DataInputStream(istream);
@@ -554,11 +556,15 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                             i2++;
                                         }
                                         message = inputLine.toString();
+                                        System.out.println("Message = " + message);
+
                                         System.out.println("Got here N");
-                                        t.setText(message);
+                                        memo_textView.setText(message);
                                         System.out.println("Got here N+1");
-                                        memo_string = t.getText().toString(); // update global value
+                                        memo_string = message; // update global value
                                         System.out.println("Got here N+2");
+                                    } else {
+                                        System.out.println("memo dialog box is null");
                                     }
                                     //writeFIleToStorage("memo" + count + ".txt", istream);
 
