@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         if (item.getItemId() == R.id.save) {
 
             saveData();
-            Toast.makeText(this, "Devices List Saved", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "App Data Saved", Toast.LENGTH_SHORT).show();
             return true;
         } else if (item.getItemId() == R.id.note) {
             openMemo();
@@ -275,12 +275,12 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     @Override
     public void editItemWithDialogValues(String IP, String Port) {
 
-        Toast.makeText(getApplicationContext(), "Changing item with index " + last_clicked_position, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Changing item with index " + last_clicked_position, Toast.LENGTH_SHORT).show();
         if (last_clicked_position != -1) {
             changeItemText(last_clicked_position, IP, Port);
             changeItemData(last_clicked_position, IP, Port);
         } else {
-            Toast.makeText(getApplicationContext(), "error trying to edit item, index is undefined", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Couldn't find item", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -324,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     public void openMemo() {
         if (memoDialogBox == null) return;
         memoDialogBox.show();
-        Toast.makeText(this, "Show Memo", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Show Memo", Toast.LENGTH_SHORT).show();
 
         TextView txtclose2;
         memoDialogBox.setContentView(R.layout.memo);

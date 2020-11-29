@@ -11,4 +11,5 @@
     <string name="filename_file_extension"><![CDATA[<FileName>.<FileExtension>]]></string>
     <string name="save">Save</string>
     <string name="memo">Memo</string>
+    <string name="empty_n">Empty\n</string>
 </resources>

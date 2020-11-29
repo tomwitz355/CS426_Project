@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+Animation Resources:
+https://lottiefiles.com/38815-full-colour-internet-computer-screen-globe-morph
+https://lottiefiles.com/9981-cloud
+https://lottiefiles.com/4516-pencil-animation
+https://lottiefiles.com/1668-wifi-signal
+-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout"
