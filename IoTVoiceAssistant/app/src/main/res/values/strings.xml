@@ -9,4 +9,6 @@
     <string name="ipv4_address">IPv4 Address</string>
     <string name="edit_button">edit button</string>
     <string name="filename_file_extension"><![CDATA[<FileName>.<FileExtension>]]></string>
+    <string name="save">Save</string>
+    <string name="memo">Memo</string>
 </resources>

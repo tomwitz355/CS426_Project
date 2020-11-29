@@ -38,6 +38,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tapadoo.alerter.Alerter;
 
 import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
     private static final int SPEECH_REQUEST_CODE = 0;
     public Dialog itemDialogBox;
+    public Dialog memoDialogBox;
     public Animation rotateAnim;
     // MAIN CONTROL VARIABLES
     private ArrayList<Item> ITEMLIST; // may want to prevent duplicates at some point by checking this list
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     // MISC UI RELATED
     private FloatingActionButton addButton;
     private boolean fileDone = false;
+    private String memo_string = "";
     /********************************** INIT *********************************/
 
     @Override
@@ -92,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar); // create toolbar
+        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setSubtitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
         loadData();  // loads Devices list from memory
         buildRecyclerView();
@@ -113,6 +118,8 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                 insertItem();
             }
         });
+        memoDialogBox = new Dialog(this);
+        memoDialogBox.dismiss();
 
     }
     /* BUILD LIST AND VIEW */
@@ -153,17 +160,23 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             saveData();
             Toast.makeText(this, "Devices List Saved", Toast.LENGTH_SHORT).show();
             return true;
+        } else if (item.getItemId() == R.id.note) {
+            openMemo();
+            return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
     }
+
     /* SAVE ITEM LIST TO SHARED PREFERENCES */
     private void saveData() {
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         String json = gson.toJson(ITEMLIST);
+        String json2 = gson.toJson(memo_string);
         editor.putString("DEVICES", json);
+        editor.putString("MEMO", json2);
         editor.apply();
     }
     /* LOAD ITEM LIST FROM SHARED PREFERENCES */
@@ -171,11 +184,13 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString("DEVICES", null);
+        String json2 = sharedPreferences.getString("MEMO", null);
         Type type = new TypeToken<ArrayList<Item>>() {
         }.getType();
+        Type type2 = new TypeToken<String>() {
+        }.getType();
         ITEMLIST = gson.fromJson(json, type);
-
-
+        memo_string = gson.fromJson(json2, type2);
         if (ITEMLIST == null) {
             ITEMLIST = new ArrayList<>();
         } else {
@@ -303,6 +318,32 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         Objects.requireNonNull(itemDialogBox.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         itemDialogBox.show();
     }
+
+    public void openMemo() {
+        if (memoDialogBox == null) return;
+        memoDialogBox.show();
+        Toast.makeText(this, "Show Memo", Toast.LENGTH_SHORT).show();
+
+        TextView txtclose;
+        TextView memo_text;
+        memoDialogBox.setContentView(R.layout.memo);
+        txtclose = memoDialogBox.findViewById(R.id.txtclose2);
+
+        memo_text = memoDialogBox.findViewById(R.id.memo_text);
+
+        memo_string = memo_text.getText().toString();
+
+        txtclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                memoDialogBox.dismiss();
+
+            }
+        });
+        Objects.requireNonNull(memoDialogBox.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        memoDialogBox.show();
+    }
+
     /**** Utility ****/
     /* UTILITY FUNCTION TO EDIT AND UPDATE TEXT OF AN ITEM*/
     public void changeItemText(int position, String t1, String t2) {
@@ -311,6 +352,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         ITEMLIST.get(position).changeText2(t2);
         mAdapter.notifyItemChanged(position);
     }
+
     /* UTILITY FUNCTION TO EDIT AND UPDATE IP AND PORT OF AN ITEM*/
     public void changeItemData(int position, String t1, String t2){
         ITEMLIST.get(position).changeIP(t1);
@@ -363,21 +405,14 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             // Do something with spokenText
             if (mTcpClient != null) {
                 mTcpClient.sendMessage(spokenText);
+            } else {
+                Toast.makeText(getApplicationContext(), "TCP Client Not Established", Toast.LENGTH_SHORT).show();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     /* METHOD CALLED TO SHARE A STRING AS A TEXT FILE*/
-    private void shareTextAsFile(String string) {
-
-        Intent shareIntent = new Intent();
-        shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, string);
-        startActivity(Intent.createChooser(shareIntent, "Share response text file..."));
-    }
-
 
     public void writeFIleToStorage(String filename, InputStream is) {
         File theDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "received_files");
@@ -440,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                             // error
                             showAlerter("Error: ", "couldn't parse response");
                         } else {
-                            // @here
+
                             String str = new String(b);
                             char c = str.charAt(0);
                             switch (c) {
@@ -501,7 +536,17 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                 case '6':
                                     // Memo received
                                     showAlerter("Response: ", "Memo Received");
-                                    writeFIleToStorage("memo" + count + ".txt", istream);
+
+
+                                    //writeFIleToStorage("memo" + count + ".txt", istream);
+                                    if (memoDialogBox != null) {
+                                        TextView t = memoDialogBox.findViewById(R.id.memo_text);
+                                        DataInputStream dis = new DataInputStream(istream);
+                                        String message = dis.readUTF();
+                                        t.setText(message);
+                                        memo_string = t.getText().toString(); // update global value
+                                    }
+
                                     mTcpClient.stopClient();
                                     break;
                                 default:
@@ -521,6 +566,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         }
 
         /* unused, called when 'publishprogress' is called */
+        /* Deprecated */
         @Override
         protected void onProgressUpdate(String... values) {
 
@@ -533,7 +579,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             //response received from server
             Log.d("test", "response " + values[0]);
             showAlerter("RESPONSE ", values[0]); // maybe add failure and success for title?
-            shareTextAsFile(values[0]);
+            //shareTextAsFile(values[0]);
         }
 
     }

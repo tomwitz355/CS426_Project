@@ -4,7 +4,13 @@
     <item
         android:id="@+id/save"
         android:icon="@drawable/ic_save"
-        android:title="Save"
+        android:title="@string/save"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/note"
+        android:icon="@drawable/ic_note"
+        android:title="@string/memo"
         app:showAsAction="ifRoom" />
     <!--TODO ADD CLEAR LIST-->
+
 </menu>
