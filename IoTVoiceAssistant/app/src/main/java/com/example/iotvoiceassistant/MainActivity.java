@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         });
         memoDialogBox = new Dialog(this);
         memoDialogBox.setContentView(R.layout.memo);
+
         memoDialogBox.dismiss();
 
     }
@@ -328,9 +329,8 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         TextView txtclose2;
         memoDialogBox.setContentView(R.layout.memo);
         txtclose2 = memoDialogBox.findViewById(R.id.txtclose2);
-
         TextView memo_textView = memoDialogBox.findViewById(R.id.memo_text);
-        memo_string = memo_textView.getText().toString();
+        memo_textView.setText(memo_string);
 
         txtclose2.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -377,6 +377,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     /* VOICE RELATED */
     public void voiceButtonStart() {
         // Called to initialize voice recognition
+
         displaySpeechRecognizer();
     }
     // Create an intent that can start the Speech Recognizer activity
@@ -535,34 +536,26 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                 case '6':
                                     // Memo received
                                     showAlerter("Response: ", "Memo Received");
-                                    System.out.println("Got here 1");
 
-                                    if (memoDialogBox != null) {
-                                        TextView memo_textView = memoDialogBox.findViewById(R.id.memo_text);
-                                        System.out.println("Got here 2");
 
-                                        DataInputStream dis = new DataInputStream(istream);
-                                        System.out.println("Got here 3");
-                                        String message;
-                                        StringBuffer inputLine = new StringBuffer();
-                                        String tmp;
-                                        int i2 = 4;
-                                        while ((tmp = dis.readLine()) != null) {
-                                            inputLine.append(tmp);
-                                            System.out.println("Got here " + i2);
-                                            i2++;
-                                        }
-                                        message = inputLine.toString();
-                                        System.out.println("Message = " + message);
+                                    DataInputStream dis = new DataInputStream(istream);
+                                    System.out.println("Got here 3");
+                                    String message;
+                                    StringBuffer inputLine = new StringBuffer();
+                                    String tmp;
+                                    while ((tmp = dis.readLine()) != null) {
+                                        inputLine.append(tmp);
 
-                                        System.out.println("Got here N");
-                                        memo_textView.setText(message);
-                                        System.out.println("Got here N+1");
-                                        memo_string = message; // update global value
-                                        System.out.println("Got here N+2");
-                                    } else {
-                                        System.out.println("memo dialog box is null");
                                     }
+                                    message = inputLine.toString();
+                                    System.out.println("Message = " + message);
+
+                                    System.out.println("Got here N");
+
+
+                                    memo_string = message; // update global value
+                                    System.out.println("Got here N+2" + memo_string);
+
                                     //writeFIleToStorage("memo" + count + ".txt", istream);
 
                                     mTcpClient.stopClient();
