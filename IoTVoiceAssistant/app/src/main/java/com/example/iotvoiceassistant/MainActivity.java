@@ -38,7 +38,6 @@ import com.google.gson.reflect.TypeToken;
 import com.tapadoo.alerter.Alerter;
 
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -538,14 +537,16 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     showAlerter("Response: ", "Memo Received");
 
 
-                                    //writeFIleToStorage("memo" + count + ".txt", istream);
+
+                                    /*
                                     if (memoDialogBox != null) {
                                         TextView t = memoDialogBox.findViewById(R.id.memo_text);
                                         DataInputStream dis = new DataInputStream(istream);
                                         String message = dis.readUTF();
                                         t.setText(message);
                                         memo_string = t.getText().toString(); // update global value
-                                    }
+                                    }*/
+                                    writeFIleToStorage("memo" + count + ".txt", istream);
 
                                     mTcpClient.stopClient();
                                     break;
