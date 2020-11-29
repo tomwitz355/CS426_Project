@@ -8,7 +8,9 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <filesystem>
+#include <algorithm>
 #include <string>
+#include <cctype>
 #include <sstream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -119,11 +121,14 @@ int __cdecl main(void){
                         bool found = false;
                         for(auto &p : filesystem::directory_iterator("./")){
                             if(p.path().filename().string().size() >= token.size()){
-                              if(p.path().filename().string().substr(0,token.size()) == token){
-                                length = filesystem::file_size(p);
-                                input = ifstream(p.path().filename().string(), ios::in|ios::binary);
-                                found = true;
-                              }
+                                string pathlower = p.path().filename().string().substr(0,token.size());
+                                transform(pathlower.begin(), pathlower.end(), pathlower.begin(), ::tolower);
+                                transform(token.begin(), token.end(), token.begin(), ::tolower);
+                                if(pathlower == token){
+                                    length = filesystem::file_size(p);
+                                    input = ifstream(p.path().filename().string(), ios::in|ios::binary);
+                                    found = true;
+                                }
                             }
                         }
                         if(!found){
@@ -131,13 +136,15 @@ int __cdecl main(void){
                             iSendResult = send( ClientSocket, flag , 1, 0 );
                             sent = true;
                         }
-                        char flag[] = "2";
-                        iSendResult = send( ClientSocket, flag , 1, 0 );
-                        buffer = new char [length];
-                        input.read (buffer,length);
-                        iSendResult = send( ClientSocket, buffer , length, 0 );
-                        sent = true;
-                        printf("Bytes sent: %d\n", length);
+                        else{
+                            char flag[] = "2";
+                            iSendResult = send( ClientSocket, flag , 1, 0 );
+                            buffer = new char [length];
+                            input.read (buffer,length);
+                            iSendResult = send( ClientSocket, buffer , length, 0 );
+                            sent = true;
+                            printf("Bytes sent: %d\n", length);
+                        }
                         if (iSendResult == SOCKET_ERROR) {
                             printf("send failed with error: %d\n", WSAGetLastError());
                             closesocket(ClientSocket);
@@ -155,7 +162,6 @@ int __cdecl main(void){
                 }
                 else if(token == "ping"){
                     string result = GetStdoutFromCommand("python commands/ping.py");
-                    cout << result << endl;
                     char flag[] = "3";
                     sent = true;
                     iSendResult = send( ClientSocket, flag , 1, 0 );
