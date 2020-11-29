@@ -149,7 +149,8 @@ int __cdecl main(void){
                             input.read (buffer,length);
                             iSendResult = send( ClientSocket, buffer , length, 0 );
                             sent = true;
-                            printf("Bytes sent: %d\n", length);
+                            delete buffer;
+                            input.close();
                         }
                         if (iSendResult == SOCKET_ERROR) {
                             printf("send failed with error: %d\n", WSAGetLastError());
@@ -157,8 +158,6 @@ int __cdecl main(void){
                             WSACleanup();
                             return 1;
                         }
-                        delete buffer;
-                        input.close();
                     }
                     else{
                         char flag[] = "4";
