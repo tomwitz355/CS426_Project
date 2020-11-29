@@ -38,6 +38,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tapadoo.alerter.Alerter;
 
 import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -535,18 +536,31 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                 case '6':
                                     // Memo received
                                     showAlerter("Response: ", "Memo Received");
+                                    System.out.println("Got here 1");
 
-
-
-                                    /*
                                     if (memoDialogBox != null) {
                                         TextView t = memoDialogBox.findViewById(R.id.memo_text);
+                                        System.out.println("Got here 2");
+
                                         DataInputStream dis = new DataInputStream(istream);
-                                        String message = dis.readUTF();
+                                        System.out.println("Got here 3");
+                                        String message;
+                                        StringBuffer inputLine = new StringBuffer();
+                                        String tmp;
+                                        int i2 = 4;
+                                        while ((tmp = dis.readLine()) != null) {
+                                            inputLine.append(tmp);
+                                            System.out.println("Got here " + i2);
+                                            i2++;
+                                        }
+                                        message = inputLine.toString();
+                                        System.out.println("Got here N");
                                         t.setText(message);
+                                        System.out.println("Got here N+1");
                                         memo_string = t.getText().toString(); // update global value
-                                    }*/
-                                    writeFIleToStorage("memo" + count + ".txt", istream);
+                                        System.out.println("Got here N+2");
+                                    }
+                                    //writeFIleToStorage("memo" + count + ".txt", istream);
 
                                     mTcpClient.stopClient();
                                     break;
