@@ -455,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     break;
                                 case '2':
                                     // file received
-                                    showAlerter("Response: ", "case 2");
+                                    showAlerter("Response: ", "file received");
                                     openFileNameGrabberDialog(istream);
 
                                     while (!fileDone) {
@@ -466,7 +466,6 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                             showAlerter("Error", "interrupted");
                                         }
                                     }
-                                    showAlerter("DEBUG", "File written successfully");
                                     mTcpClient.stopClient();
                                     fileDone = false;
                                     // tcp client closed when file written
@@ -480,6 +479,12 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                 case '4':
                                     // file not found
                                     showAlerter("Response: ", "file not found");
+                                    mTcpClient.stopClient();
+                                    break;
+                                case '5':
+                                    // get clipboard
+                                    showAlerter("Response: ", "clipboard received (in file)");
+                                    writeFIleToStorage("results" + count + ".txt", istream);
                                     mTcpClient.stopClient();
                                     break;
                                 default:
