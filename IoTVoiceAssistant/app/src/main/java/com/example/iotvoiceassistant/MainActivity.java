@@ -1,20 +1,16 @@
 package com.example.iotvoiceassistant;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.Menu;
@@ -33,7 +29,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -206,11 +201,8 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     /* DIALOG BOX FOR GETTING FILE NAME FROM USER */
     public void openFileNameGrabberDialog(InputStream istream) {
 
-        System.out.println("got here 2");
         FileNameGrabberDialog dialog = new FileNameGrabberDialog(istream);
-        System.out.println("got here 3");
         dialog.show(getSupportFragmentManager(), "dialog_box_file");
-        System.out.println("got here 4");
 
     }
 
@@ -219,20 +211,11 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     public void getFileName(String filename, InputStream istream) {
         final String f = filename;
         final InputStream is = istream;
-        int bts = -1;
-        try {
-            bts = istream.available();
-        } catch (IOException e) {
-            System.out.println("io except");
-
-        }
-        System.out.println("got here 6, istream bytes = " + bts);
 
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 writeFIleToStorage(f, is);
-                System.out.println("got here 10");
                 fileDone = true;
             }
         });
@@ -401,22 +384,17 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         if (!theDir.exists()) {
             theDir.mkdirs();
         }
-        System.out.println("got here 7");
         File NewFile = new File(theDir, filename);
         try (OutputStream fos = new FileOutputStream(NewFile)) {
 
-            System.out.println("got here 8");
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             byte[] aByte = new byte[1024];
 
             int bytesRead;
-            System.out.println("got here 8.5");
             while ((bytesRead = is.read(aByte)) != -1) {
                 System.out.println(bytesRead + " bytes read");
                 bos.write(aByte);
             }
-            System.out.println("got here 9");
-            System.out.println("done reading bytes");
             bos.flush();
             bos.close();
 
@@ -428,7 +406,6 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
         }
 
-        //showAlerter("File Received", "location: " + Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename);
 
     }
 
@@ -471,32 +448,16 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     // invalid command
                                     showAlerter("Response: ", "invalid command");
                                     mTcpClient.stopClient();
-                                    return;
+                                    break;
                                 case '1':
                                     showAlerter("Response: ", "command successfully executed");
                                     mTcpClient.stopClient();
-                                    return;
+                                    break;
                                 case '2':
                                     // file received
                                     showAlerter("Response: ", "case 2");
-                                    System.out.println("got here 1");
-                                    int bts = -1;
-                                    try {
-                                        bts = istream.available();
-                                    } catch (IOException e) {
-                                        System.out.println("io except");
-
-                                    }
-                                    System.out.println("got here 1.5, bytes = " + bts);
                                     openFileNameGrabberDialog(istream);
-                                    int bts2 = -1;
-                                    try {
-                                        bts2 = istream.available();
-                                    } catch (IOException e) {
-                                        System.out.println("io except");
 
-                                    }
-                                    System.out.println("got here 5, bytes = " + bts2);
                                     while (!fileDone) {
                                         //wait
                                         try {
@@ -505,28 +466,27 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                             showAlerter("Error", "interrupted");
                                         }
                                     }
-                                    System.out.println("got here 11");
                                     showAlerter("DEBUG", "File written successfully");
                                     mTcpClient.stopClient();
                                     fileDone = false;
-                                    System.out.println("got here 12");
-                                    return;
+                                    // tcp client closed when file written
+                                    break;
                                 case '3':
                                     // ping test
                                     writeFIleToStorage("results" + count + ".txt", istream);
                                     count++;
                                     mTcpClient.stopClient();
-                                    return;
+                                    break;
                                 case '4':
                                     // file not found
                                     showAlerter("Response: ", "file not found");
                                     mTcpClient.stopClient();
-                                    return;
+                                    break;
                                 default:
                                     // err
                                     showAlerter("Message Received Error", "Code = " + str);
                                     mTcpClient.stopClient();
-                                    return;
+                                    break;
                             }
                         }
                     } catch (IOException e) {
@@ -551,8 +511,6 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             //response received from server
             Log.d("test", "response " + values[0]);
             showAlerter("RESPONSE ", values[0]); // maybe add failure and success for title?
-
-
             shareTextAsFile(values[0]);
         }
 
