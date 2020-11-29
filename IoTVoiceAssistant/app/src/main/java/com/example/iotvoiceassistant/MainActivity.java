@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
     private FloatingActionButton addButton;
     private boolean fileDone = false;
     private String memo_string = "";
-    private TextView memo_textView;
     /********************************** INIT *********************************/
 
     @Override
@@ -120,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             }
         });
         memoDialogBox = new Dialog(this);
-        memo_textView = memoDialogBox.findViewById(R.id.memo_text);
+        memoDialogBox.setContentView(R.layout.memo);
         memoDialogBox.dismiss();
 
     }
@@ -330,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
         memoDialogBox.setContentView(R.layout.memo);
         txtclose2 = memoDialogBox.findViewById(R.id.txtclose2);
 
-
+        TextView memo_textView = memoDialogBox.findViewById(R.id.memo_text);
         memo_string = memo_textView.getText().toString();
 
         txtclose2.setOnClickListener(new View.OnClickListener() {
@@ -539,9 +538,7 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     System.out.println("Got here 1");
 
                                     if (memoDialogBox != null) {
-                                        if (memo_textView == null) {
-                                            System.out.println("text view is null");
-                                        }
+                                        TextView memo_textView = memoDialogBox.findViewById(R.id.memo_text);
                                         System.out.println("Got here 2");
 
                                         DataInputStream dis = new DataInputStream(istream);
