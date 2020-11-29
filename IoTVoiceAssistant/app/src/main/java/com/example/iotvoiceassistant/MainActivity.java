@@ -440,8 +440,6 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
             System.out.println("IO Exception");
 
         }
-
-
     }
 
     public class ConnectTask extends AsyncTask<String, String, TcpClient> {
@@ -539,7 +537,6 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
 
 
                                     DataInputStream dis = new DataInputStream(istream);
-                                    System.out.println("Got here 3");
                                     String message;
                                     StringBuffer inputLine = new StringBuffer();
                                     String tmp;
@@ -550,11 +547,9 @@ public class MainActivity extends AppCompatActivity implements NewItemDialog.Dia
                                     message = inputLine.toString();
                                     System.out.println("Message = " + message);
 
-                                    System.out.println("Got here N");
 
 
                                     memo_string = message; // update global value
-                                    System.out.println("Got here N+2" + memo_string);
 
                                     //writeFIleToStorage("memo" + count + ".txt", istream);
 
