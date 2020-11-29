@@ -114,8 +114,8 @@ int __cdecl main(void){
             bool sent = false;
             while(ss>>token){
                 if(token == "file"){
-                    ss>>token;
-                    if(token != "") {
+                    if(!ss.eof()) {
+                        ss>>token;
                         ifstream input;
                         int length;
                         bool found = false;
@@ -137,8 +137,14 @@ int __cdecl main(void){
                             sent = true;
                         }
                         else{
-                            char flag[] = "2";
-                            iSendResult = send( ClientSocket, flag , 1, 0 );
+                            string flag;
+                            if(token == "memo"){
+                                flag = "6";
+                            }
+                            else{
+                                flag = "2";
+                            }
+                            iSendResult = send( ClientSocket, flag.c_str() , 1, 0 );
                             buffer = new char [length];
                             input.read (buffer,length);
                             iSendResult = send( ClientSocket, buffer , length, 0 );
@@ -169,10 +175,83 @@ int __cdecl main(void){
                 }
                 else if(token == "clipboard"){
                     string result = GetStdoutFromCommand("julia commands/clipboard.jl");
-                    char flag[] = "5";
+                    char flag[] = "3";
                     sent = true;
                     iSendResult = send( ClientSocket, flag , 1, 0 );
                     iSendResult = send( ClientSocket, result.c_str() , result.size(), 0 );
+                }
+                else if(token == "open"){
+                    if(!ss.eof()){
+                        ss >> token;
+                        int result = system(token.c_str());
+                        if(result == -1){
+                            char flag[] = "5";
+                            sent = true;
+                            iSendResult = send( ClientSocket, flag , 1, 0 );
+                        }
+                        else{
+                            char flag[] = "1";
+                            sent = true;
+                            iSendResult = send( ClientSocket, flag , 1, 0 );
+                        }
+
+                    }
+                    else{
+                        char flag[] = "5";
+                        sent = true;
+                        iSendResult = send( ClientSocket, flag , 1, 0 );
+                    }
+
+                }
+                else if(token == "new"){
+                    if(!ss.eof()){
+                        ss>>token;
+                        if(token == "memo"){
+                            if(!ss.eof()){
+                                FILE * memo = fopen("memo.txt", "w");
+                                fwrite(ss.str().substr(9, ss.str().size()).c_str(), sizeof(char), ss.str().substr(9, ss.str().size()).size(),memo);
+                                char newline[] = "\n";
+                                fwrite(newline, sizeof(char),1,memo);
+                                fclose(memo);
+                                char flag[] = "1";
+                                sent = true;
+                                iSendResult = send( ClientSocket, flag , 1, 0 );
+                            }
+                            else{
+                                char flag[] = "5";
+                                sent = true;
+                                iSendResult = send( ClientSocket, flag , 1, 0 );
+                            }
+
+                        }
+                        else{
+                            char flag[] = "0";
+                            iSendResult = send( ClientSocket, flag , 1, 0 );
+                            sent = true;
+                        }
+                    }
+                    else{
+                        char flag[] = "0";
+                        iSendResult = send( ClientSocket, flag , 1, 0 );
+                        sent = true;
+                    }
+                }
+                else if(token == "memo"){
+                    if(!ss.eof()){
+                        FILE * memo = fopen("memo.txt", "a");
+                        fwrite(ss.str().substr(5, ss.str().size()).c_str(), sizeof(char),ss.str().substr(5, ss.str().size()).size(),memo);
+                        char newline[] = "\n";
+                        fwrite(newline, sizeof(char),1,memo);
+                        fclose(memo);
+                        char flag[] = "1";
+                        sent = true;
+                        iSendResult = send( ClientSocket, flag , 1, 0 );
+                    }
+                    else{
+                        char flag[] = "5";
+                        sent = true;
+                        iSendResult = send( ClientSocket, flag , 1, 0 );
+                    }
                 }
             }
             if(!sent){
