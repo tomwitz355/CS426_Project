@@ -1,12 +1,10 @@
 package com.example.iotvoiceassistant;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -15,7 +13,7 @@ import java.net.Socket;
 public class TcpClient {
 
     public static final String TAG = TcpClient.class.getSimpleName();
-    public static String SERVER_IP = "172.20.10.4"; //server IP address @TODO remember to set a device with these values in the application
+    public static String SERVER_IP = "172.20.10.4"; //server IP address
     public static int SERVER_PORT = 12000;
     // message to send to the server
     private String mServerMessage;
