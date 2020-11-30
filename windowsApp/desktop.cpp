@@ -234,6 +234,7 @@ int __cdecl main(void){
                         iSendResult = send( ClientSocket, flag , 1, 0 );
                         sent = true;
                     }
+                    break;
                 }
                 else if(token == "memo"){
                     if(!ss.eof()){
@@ -344,8 +345,6 @@ int __cdecl main(void){
                 }
             }
             closesocket(ClientSocket);
-
-
         }
         else if (iResult == 0)
             printf("Connection closing...\n");
