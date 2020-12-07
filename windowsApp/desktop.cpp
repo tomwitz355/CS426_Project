@@ -25,6 +25,8 @@ using namespace std;
 
 
 int __cdecl main(void){
+
+// some variables needed for storing data duing the lifetime of the program
     WSADATA wsaData;
     struct addrinfo *result = NULL;
     struct addrinfo hints;
@@ -33,7 +35,7 @@ int __cdecl main(void){
     SOCKET ListenSocket = INVALID_SOCKET;
     SOCKET ClientSocket = INVALID_SOCKET;
 
-
+//char pointer to store the received data from the android app
     int iSendResult;
     char recvbuf[DEFAULT_BUFLEN];
     int recvbuflen = DEFAULT_BUFLEN;
@@ -88,7 +90,15 @@ int __cdecl main(void){
         return 1;
     }
 
-    // Accept a client socket
+/*
+main loop, basic flow: every iteration
+    - wait for a connection from android app
+    - wait for a command to be sent from android app
+    - parse the command for a token that matches a defined command
+    - execute command if valid
+    - send result to the android app
+    - disconnect the current connection
+*/
     while(true){
         ClientSocket = accept(ListenSocket, NULL, NULL);
         if (ClientSocket == INVALID_SOCKET) {
@@ -98,12 +108,9 @@ int __cdecl main(void){
             return 1;
         }
         printf("new connection\n");
-        // CreateThread(NULL, 0, receiveThread, NULL, 0, NULL);
         char recvbuf[DEFAULT_BUFLEN] = {0};
         iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
         if (iResult > 0) {
-            // printf("Bytes received: %d\n", iResult);
-            // printf("%s\n",recvbuf);
             string temp = string(recvbuf);
             temp.pop_back();
             std::istringstream ss(temp);
@@ -113,6 +120,7 @@ int __cdecl main(void){
             int length = 0;
             bool sent = false;
             while(ss>>token){
+// sends a file to the android app.  If the second argument is memo, sends the existing memo over.  Sends an error if the file cannot be found
                 if(token == "file"){
                     if(!ss.eof()) {
                         ss>>token;
@@ -165,6 +173,7 @@ int __cdecl main(void){
                         sent = true;
                     }
                 }
+// runs the ping python command and sends average latency in miliseconds to the android app
                 else if(token == "ping"){
                     string result = GetStdoutFromCommand("python commands/ping.py");
                     char flag[] = "3";
@@ -172,6 +181,7 @@ int __cdecl main(void){
                     iSendResult = send( ClientSocket, flag , 1, 0 );
                     iSendResult = send( ClientSocket, result.c_str() , result.size(), 0 );
                 }
+// runs the clipboard python command and sends the contents of the clipboard to the android app
                 else if(token == "clipboard"){
                     string result = GetStdoutFromCommand("julia commands/clipboard.jl");
                     char flag[] = "3";
@@ -179,6 +189,7 @@ int __cdecl main(void){
                     iSendResult = send( ClientSocket, flag , 1, 0 );
                     iSendResult = send( ClientSocket, result.c_str() , result.size(), 0 );
                 }
+// opens an application on the desktop that as long as it is in path.  Sends an error if the application cannot be found
                 else if(token == "open"){
                     if(!ss.eof()){
                         ss >> token;
@@ -202,6 +213,7 @@ int __cdecl main(void){
                     }
 
                 }
+// replaces the current memo with a new memo that contains whatever is said after the command
                 else if(token == "new"){
                     if(!ss.eof()){
                         ss>>token;
@@ -236,6 +248,7 @@ int __cdecl main(void){
                     }
                     break;
                 }
+// appends to the existing memo whatever is said after the command
                 else if(token == "memo"){
                     if(!ss.eof()){
                         FILE * memo = fopen("memo.txt", "a");
@@ -253,6 +266,7 @@ int __cdecl main(void){
                         iSendResult = send( ClientSocket, flag , 1, 0 );
                     }
                 }
+// runs user defined script and sends either success or failure
                 else if(token == "run"){
                     if(!ss.eof()){
                         ss>>token;
@@ -334,6 +348,7 @@ int __cdecl main(void){
                     }
                 }
             }
+// if the token cannot be parsed for a valid command, sends invalid command error back to the android app
             if(!sent){
                 char flag[] = "0";
                 iSendResult = send( ClientSocket, flag , 1, 0 );
@@ -344,10 +359,10 @@ int __cdecl main(void){
                     return 1;
                 }
             }
+// closes the current connection
             closesocket(ClientSocket);
         }
-        else if (iResult == 0)
-            printf("Connection closing...\n");
+// if there is an error with receive, closes down connection
         else  {
             printf("recv failed with error: %d\n", WSAGetLastError());
             closesocket(ClientSocket);
@@ -359,7 +374,6 @@ int __cdecl main(void){
 
 
     // No longer need server socket
-
     // Receive until the peer shuts down the connection
     // shutdown the connection since we're done
     iResult = shutdown(ClientSocket, SD_SEND);
