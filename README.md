@@ -1,6 +1,5 @@
 # CS426_Project
 
-- ...
 - Requires:
   - Android 9 PHYSICAL device
     - Emulator does not permit voice command usage
